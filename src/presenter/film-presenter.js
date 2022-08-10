@@ -9,7 +9,7 @@ import ShowMoreButtonView from '../view/show-more-button.js';
 import { render } from '../render.js';
 
 export default class FilmPresenter {
-  films = new FilmsView();
+  filmsContainer = new FilmsView();
   filmList = new FilmListView();
   filmListContainer = new FilmListContainerView();
 
@@ -18,8 +18,8 @@ export default class FilmPresenter {
 
     render(new NavigationView(), this.container);
     render(new SortView(), this.container);
-    render(this.films, this.container);
-    render(this.filmList, this.films.getElement());
+    render(this.filmsContainer, this.container);
+    render(this.filmList, this.filmsContainer.getElement());
     render(this.filmListContainer, this.filmList.getElement());
 
     for (let i = 0; i < 5; i++) {
