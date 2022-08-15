@@ -14,8 +14,9 @@ export default class FilmPresenter {
   filmList = new FilmListView();
   filmListContainer = new FilmListContainerView();
 
-  init = (container) => {
+  init = (container, movieModel) => {
     this.container = container;
+    this.movieModel = movieModel;
 
     render(new NavigationView(), this.container);
     render(new SortView(), this.container);
