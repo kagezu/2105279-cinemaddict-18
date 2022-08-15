@@ -1,44 +1,41 @@
 import { createElement } from '../render.js';
 
+const createTitle = (title) => title ? `<h3 class="film-card__title">${title}</h3>` : '';
+const createRating = (rating) => rating ? `<p class="film-card__rating">${rating}</p>` : '';
+const createYear = ({ date }) => date ? `<span class="film-card__year">${date}</span>` : '';
+const createDuration = (runtime) => runtime ? `<span class="film-card__duration">${runtime}m</span>` : '';
+const createGenre = (genres) => genres ? `<span class="film-card__genre">${genres.join(' ')}</span>` : '';
+const createPoster = (poster) => poster ? `<img src="${poster}" alt="" class="film-card__poster">` : '';
+const createDescription = (description) => description ? `<p class="film-card__description">${description}</p>` : '';
+const createCountComments = ({ length }) => {
+  const count = length ? `${length} comments` : 'There is no comment';
+  return `<span class="film-card__comments">${count}</span>`;
+};
+const createButton = (style, text, activated) => {
+  const activatedStyle = activated ? ' film-card__controls-item--active' : '';
+  return `<button class="film-card__controls-item ${style}${activatedStyle}" type="button">${text}</button>`;
+};
+
 const createFilmCardTemplate = ({ comments, filmInfo, userDetails }) => {
-  const { title, alternativeTitle, totalRating, poster, ageRating, director, writers, actors, release, runtime, genre, description } = filmInfo;
+  const { title, totalRating, poster, release, runtime, genre, description } = filmInfo;
+  const { watchList, alreadyWatched, favorite } = userDetails;
   return `<article class="film-card">
           <a class="film-card__link">
-            <h3 class="film-card__title">${title}</h3>
-            <p class="film-card__rating">${totalRating}</p>
+            ${createTitle(title)}
+            ${createRating(totalRating)}
             <p class="film-card__info">
-              <span class="film-card__year">${release.date}</span>
-              <span class="film-card__duration">${runtime}m</span>
-              <span class="film-card__genre">${genre[0]}</span>
+              ${createYear(release)}
+              ${createDuration(runtime)}
+              ${createGenre(genre)}
             </p>
-            <img src="${poster}" alt="" class="film-card__poster">
-            <p class="film-card__description">Burlesque comic Ralph "Skid" Johnson (Skelly), and specialty dancer Bonny Lee King (Carroll), end up together on a cold, rainy night at a tr…</p>
-            <span class="film-card__comments">${comments.length} comments</span>
+            ${createPoster(poster)}
+            ${createDescription(description)}
+            ${createCountComments(comments)}
           </a>
           <div class="film-card__controls">
-            <button class="film-card__controls-item film-card__controls-item--add-to-watchlist" type="button">Add to watchlist</button>
-            <button class="film-card__controls-item film-card__controls-item--mark-as-watched" type="button">Mark as watched</button>
-            <button class="film-card__controls-item film-card__controls-item--favorite" type="button">Mark as favorite</button>
-          </div>
-        </article>
-
-        <article class="film-card">
-          <a class="film-card__link">
-            <h3 class="film-card__title">Popeye the Sailor Meets Sindbad the Sailor</h3>
-            <p class="film-card__rating">6.3</p>
-            <p class="film-card__info">
-              <span class="film-card__year">1936</span>
-              <span class="film-card__duration">16m</span>
-              <span class="film-card__genre">Cartoon</span>
-            </p>
-            <img src="./images/posters/popeye-meets-sinbad.png" alt="" class="film-card__poster">
-            <p class="film-card__description">In this short, Sindbad the Sailor (presumably Bluto playing a "role") proclaims himself, in song, to be the greatest sailor, adventurer and…</p>
-            <span class="film-card__comments">0 comments</span>
-          </a>
-          <div class="film-card__controls">
-            <button class="film-card__controls-item film-card__controls-item--add-to-watchlist film-card__controls-item--active" type="button">Add to watchlist</button>
-            <button class="film-card__controls-item film-card__controls-item--mark-as-watched film-card__controls-item--active" type="button">Mark as watched</button>
-            <button class="film-card__controls-item film-card__controls-item--favorite film-card__controls-item--active" type="button">Mark as favorite</button>
+          ${createButton('film-card__controls-item--add-to-watchlist', 'Add to watchlist', watchList)}
+          ${createButton('film-card__controls-item--mark-as-watched', 'Mark as watched', alreadyWatched)}
+          ${createButton('film-card__controls-item--favorite', 'Mark as favorite', favorite)}
           </div>
         </article>`;
 };

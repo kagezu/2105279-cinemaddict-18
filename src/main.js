@@ -13,4 +13,4 @@ const movieModel = new MovieModel();
 render(new ProfileView(), siteHeaderElement);
 const filmPresenter = new FilmPresenter();
 filmPresenter.init(siteMainElement, movieModel);
-render(new FilmDetails(), siteBodyElement);
+// render(new FilmDetails(), siteBodyElement);

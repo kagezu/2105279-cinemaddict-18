@@ -8,7 +8,7 @@ const generateInfo = () => ({
   'title': 'A Little Pony Without The Carpet',
   'alternativeTitle': 'Laziness Who Sold Themselves',
   'totalRating': 5.3,
-  'poster': 'images/posters/blue-blazes.jpg',
+  'poster': 'images/posters/the-dance-of-life.jpg',
   'ageRating': 0,
   'director': 'Tom Ford',
   'writers': [
@@ -29,10 +29,10 @@ const generateInfo = () => ({
 });
 
 const generateUserDetails = () => ({
-  'watchlist': false,
-  'already_watched': true,
-  'watching_date': '2019-04-12T16:12:32.554Z',
-  'favorite': false
+  'watchList': true,
+  'alreadyWatched': true,
+  'watchingDate': '2019-04-12T16:12:32.554Z',
+  'favorite': true
 });
 
 

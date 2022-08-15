@@ -25,7 +25,7 @@ export default class FilmPresenter {
     render(this.filmListContainer, this.filmList.getElement());
 
     for (let i = 0; i < COUNT_FILM_CARD; i++) {
-      render(new FilmCardView(this.movieModel.getMovie()[i]), this.filmListContainer.getElement());
+      render(new FilmCardView(this.movieModel.getMovies()[i]), this.filmListContainer.getElement());
     }
 
     render(new ShowMoreButtonView(), this.filmList.getElement());
