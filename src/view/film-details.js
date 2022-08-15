@@ -1,6 +1,21 @@
 import { createElement } from '../render.js';
+import dayjs from 'dayjs';
 
-const createFilmDetailsTemplate = () => (`<section class="film-details">
+const createPoster = (poster) => poster ? `<img class="film-details__poster-img" src="${poster}" alt="">` : '';
+const createAgeRating = (age) => age ? `<p class="film-details__age">${age}+</p>` : '';
+const createTitle = (title) => title ? `<h3 class="film-details__title">${title}</h3>` : '';
+const createOriginalTitle = (title) => title ? `<p class="film-details__title-original">${title}</p>` : '';
+const createTotalRating = (rating) => rating ? ` <div class="film-details__rating">
+              <p class="film-details__total-rating">${rating}</p></div>` : '';
+const createPoster = (poster) => poster ? `<img class="film-details__poster-img" src="${poster}" alt="">` : '';
+const createPoster = (poster) => poster ? `<img class="film-details__poster-img" src="${poster}" alt="">` : '';
+const createPoster = (poster) => poster ? `<img class="film-details__poster-img" src="${poster}" alt="">` : '';
+
+const createFilmDetailsTemplate = ({ comments, filmInfo, userDetails }, comments) => {
+  const { title, alternativeTitle, totalRating, poster, ageRating, director, writers, actors, release, runtime, genre, description } = filmInfo;
+  const { watchList, alreadyWatched, favorite } = userDetails;
+
+  return `<section class="film-details">
   <div class="film-details__inner">
     <div class="film-details__top-container">
       <div class="film-details__close">
@@ -163,12 +178,18 @@ const createFilmDetailsTemplate = () => (`<section class="film-details">
       </section>
     </div>
   </div>
-</section>`);
+</section>`;
+};
 
 export default class FilmDetailsView {
 
+  constructor(movieModel, id) {
+    this.movie = movieModel.getMovies()[id];
+    this.comments = movieModel.getComments();
+  }
+
   getTemplate() {
-    return createFilmDetailsTemplate();
+    return createFilmDetailsTemplate(this.movie, this.comments);
   }
 
   getElement() {
