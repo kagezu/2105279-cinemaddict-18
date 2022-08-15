@@ -6,10 +6,10 @@ const generateComments = () => {
 
 const generateInfo = () => ({
   'title': 'A Little Pony Without The Carpet',
-  'alternative_title': 'Laziness Who Sold Themselves',
-  'total_rating': 5.3,
+  'alternativeTitle': 'Laziness Who Sold Themselves',
+  'totalRating': 5.3,
   'poster': 'images/posters/blue-blazes.jpg',
-  'age_rating': 0,
+  'ageRating': 0,
   'director': 'Tom Ford',
   'writers': [
     'Takeshi Kitano'
@@ -19,7 +19,7 @@ const generateInfo = () => ({
   ],
   'release': {
     'date': '2019-05-11T00:00:00.000Z',
-    'release_country': 'Finland'
+    'releaseCountry': 'Finland'
   },
   'runtime': 77,
   'genre': [
@@ -39,6 +39,6 @@ const generateUserDetails = () => ({
 export const generateMovie = () => ({
   'id': '0',
   'comments': generateComments(),
-  'film_info': generateInfo(),
-  'user_details': generateUserDetails(),
+  'filmInfo': generateInfo(),
+  'userDetails': generateUserDetails(),
 });
