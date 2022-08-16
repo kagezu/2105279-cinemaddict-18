@@ -48,9 +48,35 @@ const createGenres = (genres) => {
             </tr>` : '';
 };
 const createDescription = (description) => description ? `<p class="film-details__film-description">${description}</p>` : '';
-// const createPoster = (poster) => poster ? `<img class="film-details__poster-img" src="${poster}" alt="">` : '';
+const createButton = (id, text, activated) => {
+  const style = activated ? ' film-details__control-button--active' : '';
+  return `<button type="button" class="film-details__control-button film-details__control-button--${id}${style}" id="${id}" name="${id}">${text}</button>`;
+};
+const createCountComments = (count) => count ? `<h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${count}</span></h3>` : '';
+const createComment = ({ author, comment, date, emotion }) => ` <li class="film-details__comment">
+            <span class="film-details__comment-emoji">
+              <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-smile">
+            </span>
+            <div>
+              <p class="film-details__comment-text">${comment}</p>
+              <p class="film-details__comment-info">
+                <span class="film-details__comment-author">${author}</span>
+                <span class="film-details__comment-day">${dayjs(date).format('YYYY/MM/DD HH:mm')}</span>
+                <button class="film-details__comment-delete">Delete</button>
+              </p>
+            </div>
+          </li>`;
+const createComments = (comments, listComments) => {
+  const template = comments.map(
+    (index) => createComment(listComments.find(
+      ({ id }) => id === index)
+    )
+  )
+    .join('');
+  return `<ul class="film-details__comments-list">${template}</ul>`;
+};
 
-const createFilmDetailsTemplate = ({ comments, filmInfo, userDetails }, allComments) => {
+const createFilmDetailsTemplate = ({ comments, filmInfo, userDetails }, listComments) => {
   const { title, alternativeTitle, totalRating, poster, ageRating, director, writers, actors, release, runtime, genre, description } = filmInfo;
   const { watchList, alreadyWatched, favorite } = userDetails;
   return `<section class="film-details">
@@ -89,70 +115,16 @@ const createFilmDetailsTemplate = ({ comments, filmInfo, userDetails }, allComme
       </div>
 
       <section class="film-details__controls">
-        <button type="button" class="film-details__control-button film-details__control-button--watchlist" id="watchlist" name="watchlist">Add to watchlist</button>
-        <button type="button" class="film-details__control-button film-details__control-button--active film-details__control-button--watched" id="watched" name="watched">Already watched</button>
-        <button type="button" class="film-details__control-button film-details__control-button--favorite" id="favorite" name="favorite">Add to favorites</button>
+      ${createButton('watchlist', 'Add to watchlist', watchList)}
+      ${createButton('watched', 'Already watched', alreadyWatched)}
+      ${createButton('favorite', 'Add to favorites', favorite)}
       </section>
     </div>
 
     <div class="film-details__bottom-container">
       <section class="film-details__comments-wrap">
-        <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">4</span></h3>
-
-        <ul class="film-details__comments-list">
-          <li class="film-details__comment">
-            <span class="film-details__comment-emoji">
-              <img src="./images/emoji/smile.png" width="55" height="55" alt="emoji-smile">
-            </span>
-            <div>
-              <p class="film-details__comment-text">Interesting setting and a good cast</p>
-              <p class="film-details__comment-info">
-                <span class="film-details__comment-author">Tim Macoveev</span>
-                <span class="film-details__comment-day">2019/12/31 23:59</span>
-                <button class="film-details__comment-delete">Delete</button>
-              </p>
-            </div>
-          </li>
-          <li class="film-details__comment">
-            <span class="film-details__comment-emoji">
-              <img src="./images/emoji/sleeping.png" width="55" height="55" alt="emoji-sleeping">
-            </span>
-            <div>
-              <p class="film-details__comment-text">Booooooooooring</p>
-              <p class="film-details__comment-info">
-                <span class="film-details__comment-author">John Doe</span>
-                <span class="film-details__comment-day">2 days ago</span>
-                <button class="film-details__comment-delete">Delete</button>
-              </p>
-            </div>
-          </li>
-          <li class="film-details__comment">
-            <span class="film-details__comment-emoji">
-              <img src="./images/emoji/puke.png" width="55" height="55" alt="emoji-puke">
-            </span>
-            <div>
-              <p class="film-details__comment-text">Very very old. Meh</p>
-              <p class="film-details__comment-info">
-                <span class="film-details__comment-author">John Doe</span>
-                <span class="film-details__comment-day">2 days ago</span>
-                <button class="film-details__comment-delete">Delete</button>
-              </p>
-            </div>
-          </li>
-          <li class="film-details__comment">
-            <span class="film-details__comment-emoji">
-              <img src="./images/emoji/angry.png" width="55" height="55" alt="emoji-angry">
-            </span>
-            <div>
-              <p class="film-details__comment-text">Almost two hours? Seriously?</p>
-              <p class="film-details__comment-info">
-                <span class="film-details__comment-author">John Doe</span>
-                <span class="film-details__comment-day">Today</span>
-                <button class="film-details__comment-delete">Delete</button>
-              </p>
-            </div>
-          </li>
-        </ul>
+        ${createCountComments(comments.length)}
+        ${createComments(comments, listComments)}
 
         <form class="film-details__new-comment" action="" method="get">
           <div class="film-details__add-emoji-label"></div>
