@@ -12,7 +12,7 @@ const comments = [
   'А главное - по другому буду относиться, не так как раньше.Такие произведения должны показывать и их нужно смотреть, для воспитания прежде всего себя.',
 ];
 
-const emotions = ['smile', 'sleeping', 'puke', 'angry'];
+export const emotions = ['smile', 'sleeping', 'puke', 'angry'];
 
 const authors = ['Tim Macoveev', 'John Doe', 'The Great', ' Movie Buff', 'Dan Duryea'];
 
