@@ -1,4 +1,6 @@
-/*
+import dayjs from 'dayjs';
+import { getRandomInt, getRandomItem } from '../utils.js';
+
 const comments = [
   'Я начинал смотреть эту дораму вообще не зная о чём там речь.Вообще.',
   'Наверняка все видели в своей жизни людей, которые странно ходят',
@@ -11,12 +13,13 @@ const comments = [
 ];
 
 const emotions = ['smile', 'sleeping', 'puke', 'angry'];
-*/
+
+const authors = ['Tim Macoveev', 'John Doe', 'The Great', ' Movie Buff', 'Dan Duryea'];
 
 export const generateComments = (_v, id) => ({
   'id': id,
-  'author': 'Ilya O\'Reilly',
-  'comment': 'a film that changed my life, a true masterpiece, post-credit scene was just amazing omg.',
-  'date': '2019-05-11T16:12:32.554Z',
-  'emotion': 'smile'
+  'author': getRandomItem(authors),
+  'comment': getRandomItem(comments),
+  'date': dayjs().add(getRandomInt(-10000, -1), 'm').toDate(),
+  'emotion': getRandomItem(emotions)
 });
