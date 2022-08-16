@@ -54,7 +54,12 @@ const createButton = (id, text, activated) => {
   return `<button type="button" class="film-details__control-button film-details__control-button--${id}${style}" id="${id}" name="${id}">${text}</button>`;
 };
 const createCountComments = (count) => count ? `<h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${count}</span></h3>` : '';
-const createComment = ({ author, comment, date, emotion }) => ` <li class="film-details__comment">
+const createComment = (message) => {
+  if (!message) {
+    return;
+  }
+  const { author, comment, date, emotion } = message;
+  return ` <li class="film-details__comment">
             <span class="film-details__comment-emoji">
               <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-smile">
             </span>
@@ -67,13 +72,14 @@ const createComment = ({ author, comment, date, emotion }) => ` <li class="film-
               </p>
             </div>
           </li>`;
+};
 const createComments = (comments, listComments) => {
-  const template = comments.map(
+  const template = comments.length ? comments.map(
     (index) => createComment(listComments.find(
       ({ id }) => id === index)
     )
   )
-    .join('');
+    .join('') : '';
   return `<ul class="film-details__comments-list">${template}</ul>`;
 };
 const createEmojiButton = (emotion) => `

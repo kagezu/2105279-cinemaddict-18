@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 
 const generateComments = () => {
   const count = getRandomInt(0, 7);
-  return new Set(Array.from({ length: count }, () => getRandomInt(0, 20)));
+  return [...new Set(Array.from({ length: count }, () => getRandomInt(0, 20)))];
 };
 
 const directors = [null, 'Tom Ford', 'Anthony Mann', 'Bruce Lee', 'Takeshi Kitano', 'King Martian'];
@@ -85,7 +85,7 @@ const generateUserDetails = () => ({
   'favorite': isTrue()
 });
 
-export const generateMovie = (id = 0) => ({
+export const generateMovie = (_v, id) => ({
   'id': id,
   'comments': generateComments(),
   'filmInfo': generateInfo(),
