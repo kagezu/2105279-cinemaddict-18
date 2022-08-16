@@ -2,7 +2,7 @@ import { createElement } from '../render.js';
 import dayjs from 'dayjs';
 import { emotions } from '../mock/comments.js';
 
-const createPoster = (poster) => poster ? `<img class="film-details__poster-img" src="${poster}" alt="">` : '';
+const createPoster = (poster) => `<img class="film-details__poster-img" src="${poster}" alt="">`;
 const createAgeRating = (age) => age ? `<p class="film-details__age">${age}+</p>` : '';
 const createTitle = (title) => title ? `<h3 class="film-details__title">${title}</h3>` : '';
 const createOriginalTitle = (title) => title ? `<p class="film-details__title-original">Original: ${title}</p>` : '';
@@ -13,12 +13,12 @@ const createDirector = (director) => director ? `
               <td class="film-details__term">Director</td>
               <td class="film-details__cell">${director}</td>
             </tr>` : '';
-const createWriters = (writers) => writers ? `
+const createWriters = (writers) => writers.length ? `
             <tr class="film-details__row">
               <td class="film-details__term">Writers</td>
               <td class="film-details__cell">${writers.join(', ')}</td>
             </tr>` : '';
-const createActors = (actors) => actors ? `
+const createActors = (actors) => actors.length ? `
             <tr class="film-details__row">
               <td class="film-details__term">Actors</td>
               <td class="film-details__cell">${actors.join(', ')}</td>
@@ -40,7 +40,7 @@ const createCountry = () => `
             </tr>`;
 const createGenre = (genre) => `<span class="film-details__genre">${genre}</span>`;
 const createGenres = (genres) => {
-  const genreString = genres.reduce(createGenre);
+  const genreString = genres.length ? genres.reduce(createGenre) : '';
   return genreString ? `<tr class="film-details__row">
               <td class="film-details__term">Genres</td>
               <td class="film-details__cell">
@@ -111,7 +111,7 @@ const createFilmDetailsTemplate = ({ comments, filmInfo, userDetails }, listComm
             ${createDirector(director)}
             ${createWriters(writers)}
             ${createActors(actors)}
-            ${createRelease(release)}
+            ${createRelease(release.date)}
             ${createRuntime(runtime)}
             ${createCountry()}
             ${createGenres(genre)}
