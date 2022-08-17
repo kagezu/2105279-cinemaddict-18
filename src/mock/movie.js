@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 
 const generateComments = () => {
   const count = getRandomInt(0, 7);
-  return [...new Set(Array.from({ length: count }, () => getRandomInt(0, 20)))];
+  return [...new Set(Array.from({ length: count }, () => getRandomInt(0, 14)))];
 };
 
 const directors = ['Tom Ford', 'Anthony Mann', 'Bruce Lee', 'Takeshi Kitano', 'King Martian'];

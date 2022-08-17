@@ -9,7 +9,7 @@ const createGenre = (genres) => genres ? `<span class="film-card__genre">${genre
 const createPoster = (poster) => poster ? `<img src="${poster}" alt="" class="film-card__poster">` : '';
 const createDescription = (description) => description ? `<p class="film-card__description">${description}</p>` : '';
 const createCountComments = ({ length }) => {
-  const count = length ? `${length} comments` : 'There is no comment';
+  const count = length ? `${length} comments` : 'No comments yet';
   return `<span class="film-card__comments">${count}</span>`;
 };
 const createButton = (style, text, activated) => {

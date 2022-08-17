@@ -53,7 +53,7 @@ const createButton = (id, text, activated) => {
   const style = activated ? ' film-details__control-button--active' : '';
   return `<button type="button" class="film-details__control-button film-details__control-button--${id}${style}" id="${id}" name="${id}">${text}</button>`;
 };
-const createCountComments = (count) => count ? `<h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${count}</span></h3>` : '';
+const createCountComments = (count) => `<h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${count ? count : 0}</span></h3>`;
 const createComment = (message) => {
   if (!message) {
     return;
