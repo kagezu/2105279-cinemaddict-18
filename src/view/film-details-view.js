@@ -158,9 +158,9 @@ const createFilmDetailsTemplate = ({ comments, filmInfo, userDetails }, listComm
 
 export default class FilmDetailsView {
 
-  constructor(movieModel, id) {
-    this.movie = movieModel.getMovies()[id];
-    this.comments = movieModel.getComments();
+  constructor(movie, comments) {
+    this.movie = movie;
+    this.comments = comments;
   }
 
   getTemplate() {
