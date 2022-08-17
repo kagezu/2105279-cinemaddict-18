@@ -1,5 +1,5 @@
 import { createElement } from '../render.js';
-import dayjs from 'dayjs';
+import { formatStringToDate, formatStringToDateWithTime, formatMinutesToTime } from '../utils.js';
 import { emotions } from '../mock/comments.js';
 
 const createPoster = (poster) => `<img class="film-details__poster-img" src="${poster}" alt="">`;
@@ -26,12 +26,12 @@ const createActors = (actors) => actors.length ? `
 const createRelease = (release) => release ? `
             <tr class="film-details__row">
               <td class="film-details__term">Release Date</td>
-              <td class="film-details__cell">${dayjs(release).format('DD MMMM YYYY')}</td>
+              <td class="film-details__cell">${formatStringToDate(release)}</td>
             </tr>` : '';
 const createRuntime = (runtime) => runtime ? `
             <tr class="film-details__row">
               <td class="film-details__term">Runtime</td>
-              <td class="film-details__cell">${runtime}m</td>
+              <td class="film-details__cell">${formatMinutesToTime(runtime)}</td>
             </tr>` : '';
 const createCountry = () => `
             <tr class="film-details__row">
@@ -67,7 +67,7 @@ const createComment = (message) => {
               <p class="film-details__comment-text">${comment}</p>
               <p class="film-details__comment-info">
                 <span class="film-details__comment-author">${author}</span>
-                <span class="film-details__comment-day">${dayjs(date).format('YYYY/MM/DD HH:mm')}</span>
+                <span class="film-details__comment-day">${formatStringToDateWithTime(date)}</span>
                 <button class="film-details__comment-delete">Delete</button>
               </p>
             </div>

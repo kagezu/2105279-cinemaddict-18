@@ -1,9 +1,9 @@
 import { createElement } from '../render.js';
-import dayjs from 'dayjs';
+import { formatStringToYear } from '../utils.js';
 
 const createTitle = (title) => title ? `<h3 class="film-card__title">${title}</h3>` : '';
 const createRating = (rating) => rating ? `<p class="film-card__rating">${rating}</p>` : '';
-const createYear = ({ date }) => date ? `<span class="film-card__year">${dayjs(date).format('YYYY')}</span>` : '';
+const createYear = ({ date }) => date ? `<span class="film-card__year">${formatStringToYear(date)}</span>` : '';
 const createDuration = (runtime) => runtime ? `<span class="film-card__duration">${runtime} m</span>` : '';
 const createGenre = (genres) => genres ? `<span class="film-card__genre">${genres.join(' ')}</span>` : '';
 const createPoster = (poster) => poster ? `<img src="${poster}" alt="" class="film-card__poster">` : '';
