@@ -5,19 +5,20 @@ const createFilmListTemplate = () => (`<section class="films-list">
       </section>`);
 
 export default class FilmListView {
+  #element;
 
   getTemplate() {
     return createFilmListTemplate();
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.getTemplate());
     }
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }

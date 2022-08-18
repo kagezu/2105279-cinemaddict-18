@@ -42,22 +42,25 @@ const createFilmCardTemplate = ({ comments, filmInfo, userDetails }) => {
 };
 
 export default class FilmCardView {
+  #movie;
+  #element;
+
   constructor(movie) {
-    this.movie = movie;
+    this.#movie = movie;
   }
 
   getTemplate() {
-    return createFilmCardTemplate(this.movie);
+    return createFilmCardTemplate(this.#movie);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.getTemplate());
     }
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }

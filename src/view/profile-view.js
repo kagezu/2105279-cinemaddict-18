@@ -6,19 +6,20 @@ const createProfileTemplate = () => (`<section class="header__profile profile">
     </section>`);
 
 export default class ProfileView {
+  #element;
 
   getTemplate() {
     return createProfileTemplate();
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.getTemplate());
     }
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }

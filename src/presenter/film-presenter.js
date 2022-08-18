@@ -10,24 +10,26 @@ import { render } from '../render.js';
 const COUNT_FILM_CARD = 5;
 
 export default class FilmPresenter {
-  filmsContainer = new FilmsView();
-  filmList = new FilmListView();
-  filmListContainer = new FilmListContainerView();
+  #filmsContainer = new FilmsView();
+  #filmList = new FilmListView();
+  #filmListContainer = new FilmListContainerView();
+  #container;
+  #movies;
 
   init = (container, movies) => {
-    this.container = container;
-    this.movies = movies;
+    this.#container = container;
+    this.#movies = movies;
 
-    render(new NavigationView(), this.container);
-    render(new SortView(), this.container);
-    render(this.filmsContainer, this.container);
-    render(this.filmList, this.filmsContainer.getElement());
-    render(this.filmListContainer, this.filmList.getElement());
+    render(new NavigationView(), this.#container);
+    render(new SortView(), this.#container);
+    render(this.#filmsContainer, this.#container);
+    render(this.#filmList, this.#filmsContainer.element);
+    render(this.#filmListContainer, this.#filmList.element);
 
     for (let i = 0; i < COUNT_FILM_CARD; i++) {
-      render(new FilmCardView(this.movies[i]), this.filmListContainer.getElement());
+      render(new FilmCardView(this.#movies[i]), this.#filmListContainer.element);
     }
 
-    render(new ShowMoreButtonView(), this.filmList.getElement());
+    render(new ShowMoreButtonView(), this.#filmList.element);
   };
 }
