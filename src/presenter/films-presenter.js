@@ -16,9 +16,9 @@ const siteBodyElement = document.body;
 
 export default class FilmsPresenter {
   #filmsContainer = new FilmsView();
-  #filmList = new FilmListView();
   #filmListContainer = new FilmListContainerView();
   #showMoreButton = new ShowMoreButtonView();
+  #filmList;
   #container;
   #movies;
   #comments;
@@ -28,6 +28,7 @@ export default class FilmsPresenter {
     this.#container = container;
     this.#movies = movies;
     this.#comments = comments;
+    this.#filmList = new FilmListView(!movies.length);
 
     render(new NavigationView(), this.#container);
     render(new SortView(), this.#container);
