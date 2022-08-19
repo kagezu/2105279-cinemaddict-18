@@ -8,7 +8,7 @@ import ShowMoreButtonView from '../view/show-more-button.js';
 import FilmDetailsView from '../view/film-details-view.js';
 import { render } from '../render.js';
 
-const COUNT_FILM_CARD = 5;
+const CARD_COUNT_PER_STEP = 5;
 const ESCAPE_KEY_NAME = 'Escape';
 
 const isEscapeKey = (evt) => evt.key === ESCAPE_KEY_NAME;
@@ -16,32 +16,44 @@ const siteBodyElement = document.body;
 
 export default class FilmsPresenter {
   #filmsContainer = new FilmsView();
-  #filmList = new FilmListView();
   #filmListContainer = new FilmListContainerView();
+  #showMoreButton = new ShowMoreButtonView();
+  #filmList;
   #container;
   #movies;
   #comments;
+  #renderedCardCount = 0;
 
   init = (container, movies, comments) => {
     this.#container = container;
     this.#movies = movies;
     this.#comments = comments;
+    this.#filmList = new FilmListView(!movies.length);
 
     render(new NavigationView(), this.#container);
     render(new SortView(), this.#container);
     render(this.#filmsContainer, this.#container);
     render(this.#filmList, this.#filmsContainer.element);
     render(this.#filmListContainer, this.#filmList.element);
-
-    for (let i = 0; i < COUNT_FILM_CARD; i++) {
-      this.#renderCard(this.#movies[i], this.#comments);
-    }
-
-    render(new ShowMoreButtonView(), this.#filmList.element);
+    render(this.#showMoreButton, this.#filmList.element);
+    this.#showMoreButton.element.addEventListener('click', this.#onLoadMoreCardClick);
+    this.#onLoadMoreCardClick();
   };
 
-  #renderCard = (move, comments) => {
-    const cardComponent = new FilmCardView(move);
+  #onLoadMoreCardClick = () => {
+    const lastComponent = Math.min(this.#renderedCardCount + CARD_COUNT_PER_STEP, this.#movies.length);
+    while (this.#renderedCardCount < lastComponent) {
+      this.#renderCard(this.#movies[this.#renderedCardCount], this.#comments);
+      this.#renderedCardCount++;
+    }
+    if (this.#renderedCardCount === this.#movies.length) {
+      this.#showMoreButton.element.remove();
+      this.#showMoreButton.removeElement();
+    }
+  };
+
+  #renderCard = (movie, comments) => {
+    const cardComponent = new FilmCardView(movie);
     let detailsComponent = null;
 
     const hideDetailsComponent = () => {
@@ -62,7 +74,7 @@ export default class FilmsPresenter {
         return;
       }
       if (!detailsComponent) {
-        detailsComponent = new FilmDetailsView(move, comments);
+        detailsComponent = new FilmDetailsView(movie, comments);
         detailsComponent.element.querySelector('.film-details__close-btn').addEventListener('click', () => {
           hideDetailsComponent();
           window.removeEventListener('keydown', onWindowKeydown);
