@@ -52,8 +52,8 @@ export default class FilmsPresenter {
     }
   };
 
-  #renderCard = (moive, comments) => {
-    const cardComponent = new FilmCardView(moive);
+  #renderCard = (movie, comments) => {
+    const cardComponent = new FilmCardView(movie);
     let detailsComponent = null;
 
     const hideDetailsComponent = () => {
@@ -74,7 +74,7 @@ export default class FilmsPresenter {
         return;
       }
       if (!detailsComponent) {
-        detailsComponent = new FilmDetailsView(moive, comments);
+        detailsComponent = new FilmDetailsView(movie, comments);
         detailsComponent.element.querySelector('.film-details__close-btn').addEventListener('click', () => {
           hideDetailsComponent();
           window.removeEventListener('keydown', onWindowKeydown);
