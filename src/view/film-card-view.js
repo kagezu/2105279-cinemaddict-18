@@ -1,15 +1,15 @@
 import { createElement } from '../render.js';
-import dayjs from 'dayjs';
+import { formatStringToYear } from '../utils.js';
 
 const createTitle = (title) => title ? `<h3 class="film-card__title">${title}</h3>` : '';
 const createRating = (rating) => rating ? `<p class="film-card__rating">${rating}</p>` : '';
-const createYear = ({ date }) => date ? `<span class="film-card__year">${dayjs(date).format('YYYY')}</span>` : '';
+const createYear = ({ date }) => date ? `<span class="film-card__year">${formatStringToYear(date)}</span>` : '';
 const createDuration = (runtime) => runtime ? `<span class="film-card__duration">${runtime} m</span>` : '';
 const createGenre = (genres) => genres ? `<span class="film-card__genre">${genres.join(' ')}</span>` : '';
 const createPoster = (poster) => poster ? `<img src="${poster}" alt="" class="film-card__poster">` : '';
 const createDescription = (description) => description ? `<p class="film-card__description">${description}</p>` : '';
 const createCountComments = ({ length }) => {
-  const count = length ? `${length} comments` : 'There is no comment';
+  const count = length ? `${length} comments` : 'No comments yet';
   return `<span class="film-card__comments">${count}</span>`;
 };
 const createButton = (style, text, activated) => {
@@ -42,22 +42,25 @@ const createFilmCardTemplate = ({ comments, filmInfo, userDetails }) => {
 };
 
 export default class FilmCardView {
+  #movie;
+  #element;
+
   constructor(movie) {
-    this.movie = movie;
+    this.#movie = movie;
   }
 
   getTemplate() {
-    return createFilmCardTemplate(this.movie);
+    return createFilmCardTemplate(this.#movie);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.getTemplate());
     }
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }

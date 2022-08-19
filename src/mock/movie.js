@@ -3,12 +3,11 @@ import dayjs from 'dayjs';
 
 const generateComments = () => {
   const count = getRandomInt(0, 7);
-  return [...new Set(Array.from({ length: count }, () => getRandomInt(0, 20)))];
+  return [...new Set(Array.from({ length: count }, () => getRandomInt(0, 14)))];
 };
 
-const directors = [null, 'Tom Ford', 'Anthony Mann', 'Bruce Lee', 'Takeshi Kitano', 'King Martian'];
+const directors = ['Tom Ford', 'Anthony Mann', 'Bruce Lee', 'Takeshi Kitano', 'King Martian'];
 const posters = [
-  null,
   'images/posters/made-for-each-other.png',
   'images/posters/popeye-meets-sinbad.png',
   'images/posters/sagebrush-trail.jpg',
@@ -47,7 +46,6 @@ const descriptions = [
   'In rutrum ac purus sit amet tempus.'
 ];
 const titles = [
-  null,
   'The Dance of Life',
   'Sagebrush Trail',
   'The Man with the Golden Arm',

@@ -1,5 +1,5 @@
 import { createElement } from '../render.js';
-import dayjs from 'dayjs';
+import { formatStringToDate, formatStringToDateWithTime, formatMinutesToTime } from '../utils.js';
 import { emotions } from '../mock/comments.js';
 
 const createPoster = (poster) => `<img class="film-details__poster-img" src="${poster}" alt="">`;
@@ -26,12 +26,12 @@ const createActors = (actors) => actors.length ? `
 const createRelease = (release) => release ? `
             <tr class="film-details__row">
               <td class="film-details__term">Release Date</td>
-              <td class="film-details__cell">${dayjs(release).format('DD MMMM YYYY')}</td>
+              <td class="film-details__cell">${formatStringToDate(release)}</td>
             </tr>` : '';
 const createRuntime = (runtime) => runtime ? `
             <tr class="film-details__row">
               <td class="film-details__term">Runtime</td>
-              <td class="film-details__cell">${runtime}m</td>
+              <td class="film-details__cell">${formatMinutesToTime(runtime)}</td>
             </tr>` : '';
 const createCountry = () => `
             <tr class="film-details__row">
@@ -53,7 +53,7 @@ const createButton = (id, text, activated) => {
   const style = activated ? ' film-details__control-button--active' : '';
   return `<button type="button" class="film-details__control-button film-details__control-button--${id}${style}" id="${id}" name="${id}">${text}</button>`;
 };
-const createCountComments = (count) => count ? `<h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${count}</span></h3>` : '';
+const createCountComments = (count) => `<h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${count ? count : 0}</span></h3>`;
 const createComment = (message) => {
   if (!message) {
     return;
@@ -67,7 +67,7 @@ const createComment = (message) => {
               <p class="film-details__comment-text">${comment}</p>
               <p class="film-details__comment-info">
                 <span class="film-details__comment-author">${author}</span>
-                <span class="film-details__comment-day">${dayjs(date).format('YYYY/MM/DD HH:mm')}</span>
+                <span class="film-details__comment-day">${formatStringToDateWithTime(date)}</span>
                 <button class="film-details__comment-delete">Delete</button>
               </p>
             </div>
@@ -157,24 +157,27 @@ const createFilmDetailsTemplate = ({ comments, filmInfo, userDetails }, listComm
 };
 
 export default class FilmDetailsView {
+  #element;
+  #comments;
+  #movie;
 
-  constructor(movieModel, id) {
-    this.movie = movieModel.getMovies()[id];
-    this.comments = movieModel.getComments();
+  constructor(movie, comments) {
+    this.#movie = movie;
+    this.#comments = comments;
   }
 
   getTemplate() {
-    return createFilmDetailsTemplate(this.movie, this.comments);
+    return createFilmDetailsTemplate(this.#movie, this.#comments);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.getTemplate());
     }
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }

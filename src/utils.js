@@ -1,3 +1,29 @@
+import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
+
+dayjs.extend(duration);
+
+/**
+ *Преобразует в формат YYYY
+ */
+const formatStringToYear = (date) => dayjs(date).format('YYYY');
+
+/**
+ *Преобразует в формат DD MMMM YYYY
+ */
+const formatStringToDate = (date) => dayjs(date).format('DD MMMM YYYY');
+
+/**
+ *Преобразует в формат YYYY/MM/DD hh:mm
+ */
+const formatStringToDateWithTime = (date) => dayjs(date).format('YYYY/MM/DD hh:mm');
+
+/**
+ *Преобразует  длительность в минутах, в часы и минуты
+ */
+const formatMinutesToTime = (minutes) => dayjs.duration(minutes, 'minutes').format('H[h] mm[m]');
+
+
 /**
   *Целое число из диапазона [min; max]
   *undefined, если подходящих значений нет.
@@ -46,4 +72,13 @@ const getRandomArray = (list) => {
   return result;
 };
 
-export { getRandomInt, getRandomFloat, getRandomItem, getRandomArray };
+export {
+  getRandomInt,
+  getRandomFloat,
+  getRandomItem,
+  getRandomArray,
+  formatStringToYear,
+  formatStringToDate,
+  formatStringToDateWithTime,
+  formatMinutesToTime
+};
