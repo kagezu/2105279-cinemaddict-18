@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 const createFilmListTemplate = (isEmpty) => {
   const hiddenClass = isEmpty ? '' : ' visually-hidden';
@@ -10,26 +10,15 @@ const createFilmListTemplate = (isEmpty) => {
       </section>`;
 };
 
-export default class FilmListView {
-  #element;
+export default class FilmListView extends AbstractView {
   #isEmpty;
 
   constructor(isEmpty) {
+    super();
     this.#isEmpty = isEmpty;
   }
 
-  getTemplate() {
+  get template() {
     return createFilmListTemplate(this.#isEmpty);
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.getTemplate());
-    }
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

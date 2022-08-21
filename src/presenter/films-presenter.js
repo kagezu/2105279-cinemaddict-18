@@ -6,7 +6,7 @@ import FilmListContainerView from '../view/film-list-container.js';
 import NavigationView from '../view/navigation-view.js';
 import ShowMoreButtonView from '../view/show-more-button.js';
 import FilmDetailsView from '../view/film-details-view.js';
-import { render } from '../render.js';
+import { render, remove } from '../framework/render.js';
 
 const CARD_COUNT_PER_STEP = 5;
 const ESCAPE_KEY_NAME = 'Escape';
@@ -36,7 +36,8 @@ export default class FilmsPresenter {
     render(this.#filmList, this.#filmsContainer.element);
     render(this.#filmListContainer, this.#filmList.element);
     render(this.#showMoreButton, this.#filmList.element);
-    this.#showMoreButton.element.addEventListener('click', this.#onLoadMoreCardClick);
+
+    this.#showMoreButton.setClickHandler(this.#onLoadMoreCardClick);
     this.#onLoadMoreCardClick();
   };
 
@@ -47,8 +48,7 @@ export default class FilmsPresenter {
       this.#renderedCardCount++;
     }
     if (this.#renderedCardCount === this.#movies.length) {
-      this.#showMoreButton.element.remove();
-      this.#showMoreButton.removeElement();
+      remove(this.#showMoreButton);
     }
   };
 
@@ -75,7 +75,7 @@ export default class FilmsPresenter {
       }
       if (!detailsComponent) {
         detailsComponent = new FilmDetailsView(movie, comments);
-        detailsComponent.element.querySelector('.film-details__close-btn').addEventListener('click', () => {
+        detailsComponent.setCloseButtonClickHandler(() => {
           hideDetailsComponent();
           window.removeEventListener('keydown', onWindowKeydown);
         });
@@ -85,7 +85,7 @@ export default class FilmsPresenter {
       window.addEventListener('keydown', onWindowKeydown);
     };
 
-    cardComponent.element.querySelector('.film-card__link').addEventListener('click', () => viewDetailsComponent());
+    cardComponent.setLinkClickHandler(viewDetailsComponent);
     render(cardComponent, this.#filmListContainer.element);
   };
 }
