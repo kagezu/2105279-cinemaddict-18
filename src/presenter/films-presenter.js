@@ -6,7 +6,7 @@ import FilmListContainerView from '../view/film-list-container.js';
 import NavigationView from '../view/navigation-view.js';
 import ShowMoreButtonView from '../view/show-more-button.js';
 import FilmDetailsView from '../view/film-details-view.js';
-import { render } from '../render.js';
+import { render } from '../framework/render.js';
 
 const CARD_COUNT_PER_STEP = 5;
 const ESCAPE_KEY_NAME = 'Escape';

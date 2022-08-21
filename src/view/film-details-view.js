@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { formatStringToDate, formatStringToDateWithTime, formatMinutesToTime } from '../utils.js';
 import { emotions } from '../mock/comments.js';
 
@@ -156,28 +156,17 @@ const createFilmDetailsTemplate = ({ comments, filmInfo, userDetails }, listComm
 </section>`;
 };
 
-export default class FilmDetailsView {
-  #element;
+export default class FilmDetailsView extends AbstractView {
   #comments;
   #movie;
 
   constructor(movie, comments) {
+    super();
     this.#movie = movie;
     this.#comments = comments;
   }
 
-  getTemplate() {
+  get template() {
     return createFilmDetailsTemplate(this.#movie, this.#comments);
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.getTemplate());
-    }
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
