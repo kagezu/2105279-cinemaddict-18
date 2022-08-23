@@ -5,4 +5,11 @@ const FilterType = {
   FAVORITES: 'favorites'
 };
 
-export { FilterType };
+const filterTypeToText = {
+  [FilterType.ALL]: 'All movies',
+  [FilterType.WATCHLIST]: 'Watchlist',
+  [FilterType.HISTORY]: 'History',
+  [FilterType.FAVORITES]: 'Favorites'
+};
+
+export { FilterType, filterTypeToText };
