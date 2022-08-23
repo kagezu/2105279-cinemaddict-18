@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { formatStringToYear } from '../utils.js';
+import { formatStringToYear } from '../utils/date.js';
 
 const createTitle = (title) => title ? `<h3 class="film-card__title">${title}</h3>` : '';
 const createRating = (rating) => rating ? `<p class="film-card__rating">${rating}</p>` : '';

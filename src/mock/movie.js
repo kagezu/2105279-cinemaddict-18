@@ -1,4 +1,4 @@
-import { getRandomInt, getRandomFloat, getRandomItem, getRandomArray } from '../utils.js';
+import { getRandomInt, getRandomFloat, getRandomItem, getRandomArray } from '../utils/random.js';
 import dayjs from 'dayjs';
 
 const generateComments = () => {

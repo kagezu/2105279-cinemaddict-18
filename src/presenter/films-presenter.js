@@ -57,7 +57,7 @@ export default class FilmsPresenter {
     let detailsComponent = null;
 
     const hideDetailsComponent = () => {
-      siteBodyElement.removeChild(detailsComponent.element);
+      remove(detailsComponent);
       siteBodyElement.classList.remove('hide-overflow');
     };
 
@@ -81,7 +81,7 @@ export default class FilmsPresenter {
         });
       }
       siteBodyElement.classList.add('hide-overflow');
-      siteBodyElement.appendChild(detailsComponent.element);
+      render(detailsComponent, siteBodyElement);
       window.addEventListener('keydown', onWindowKeydown);
     };
 

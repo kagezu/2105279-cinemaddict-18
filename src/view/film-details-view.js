@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { formatStringToDate, formatStringToDateWithTime, formatMinutesToTime } from '../utils.js';
+import { formatStringToDate, formatStringToDateWithTime, formatMinutesToTime } from '../utils/date.js';
 import { emotions } from '../mock/comments.js';
 
 const createPoster = (poster) => `<img class="film-details__poster-img" src="${poster}" alt="">`;
