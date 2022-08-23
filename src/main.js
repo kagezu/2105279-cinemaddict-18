@@ -1,6 +1,6 @@
 import ProfileView from './view/profile-view.js';
 import FilmsPresenter from './presenter/films-presenter.js';
-import { render } from './render.js';
+import { render } from './framework/render.js';
 import MovieModel from './model/movie-model.js';
 import CommentsModel from './model/comments-model.js';
 
