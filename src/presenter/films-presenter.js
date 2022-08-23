@@ -3,7 +3,7 @@ import FilmListView from '../view/film-list-view.js';
 import FilmCardView from '../view/film-card-view.js';
 import FilmsView from '../view/films-view.js';
 import FilmListContainerView from '../view/film-list-container.js';
-import NavigationView from '../view/navigation-view.js';
+// import NavigationView from '../view/navigation-view.js';
 import ShowMoreButtonView from '../view/show-more-button.js';
 import FilmDetailsView from '../view/film-details-view.js';
 import { render, remove } from '../framework/render.js';
@@ -30,7 +30,7 @@ export default class FilmsPresenter {
     this.#comments = comments;
     this.#filmList = new FilmListView(!movies.length);
 
-    render(new NavigationView(), this.#container);
+    // render(new NavigationView(), this.#container);
     render(new SortView(), this.#container);
     render(this.#filmsContainer, this.#container);
     render(this.#filmList, this.#filmsContainer.element);

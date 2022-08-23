@@ -34,6 +34,7 @@ const genres = [
   'Musical',
   'Western',
   'Cartoon',
+  'History',
 ];
 const descriptions = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
