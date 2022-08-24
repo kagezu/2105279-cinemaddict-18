@@ -1,4 +1,4 @@
-import { getRandomInt, getRandomFloat, getRandomItem, getRandomArray } from '../utils.js';
+import { getRandomInt, getRandomFloat, getRandomItem, getRandomArray } from '../utils/random.js';
 import dayjs from 'dayjs';
 
 const generateComments = () => {
@@ -34,6 +34,7 @@ const genres = [
   'Musical',
   'Western',
   'Cartoon',
+  'History',
 ];
 const descriptions = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',

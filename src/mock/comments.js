@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { getRandomInt, getRandomItem } from '../utils.js';
+import { getRandomInt, getRandomItem } from '../utils/random.js';
 
 const comments = [
   'Я начинал смотреть эту дораму вообще не зная о чём там речь.Вообще.',
