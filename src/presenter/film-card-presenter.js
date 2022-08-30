@@ -12,10 +12,12 @@ export default class FilmCardPresenter {
   #comments;
   #detailsComponent = null;
   #cardComponent = null;
+  #changeData = null;
 
-  constructor(container, comments) {
+  constructor(container, comments, changeData) {
     this.#container = container;
     this.#comments = comments;
+    this.#changeData = changeData;
   }
 
   init = (movie) => {
@@ -23,6 +25,9 @@ export default class FilmCardPresenter {
     const prevCardComponent = this.#cardComponent;
     this.#cardComponent = new FilmCardView(movie);
     this.#cardComponent.setLinkClickHandler(this.#viewDetailsComponent);
+    this.#cardComponent.setWatchlistClickHandler(this.#handleWatchlistClick);
+    this.#cardComponent.setWatchedClickHandler(this.#handleWatchedClick);
+    this.#cardComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
 
     if (prevCardComponent === null) {
       render(this.#cardComponent, this.#container);
@@ -61,5 +66,20 @@ export default class FilmCardPresenter {
       render(this.#detailsComponent, siteBodyElement);
       window.addEventListener('keydown', this.#onWindowKeydown);
     }
+  };
+
+  #handleWatchlistClick = () => {
+    this.#movie.userDetails.watchList = !this.#movie.userDetails.watchList;
+    this.#changeData(this.#movie);
+  };
+
+  #handleWatchedClick = () => {
+    this.#movie.userDetails.alreadyWatched = !this.#movie.userDetails.alreadyWatched;
+    this.#changeData(this.#movie);
+  };
+
+  #handleFavoriteClick = () => {
+    this.#movie.userDetails.favorite = !this.#movie.userDetails.favorite;
+    this.#changeData(this.#movie);
   };
 }
