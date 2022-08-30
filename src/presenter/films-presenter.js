@@ -1,15 +1,12 @@
 import SortView from '../view/sort-view.js';
 import FilmListView from '../view/film-list-view.js';
-import FilmCardView from '../view/film-card-view.js';
 import FilmsView from '../view/films-view.js';
 import FilmListContainerView from '../view/film-list-container.js';
 import ShowMoreButtonView from '../view/show-more-button.js';
-import FilmDetailsView from '../view/film-details-view.js';
 import { render, remove } from '../framework/render.js';
-import { isEscapeKey } from '../utils/common.js';
+import FilmCardPresenter from './film-card-presenter.js';
 
 const CARD_COUNT_PER_STEP = 5;
-const siteBodyElement = document.body;
 
 export default class FilmsPresenter {
   #filmsContainer = new FilmsView();
@@ -33,7 +30,7 @@ export default class FilmsPresenter {
     this.#onLoadMoreCardClick();
   };
 
-  /*
+  /**
   * Отрисовка контейнера для карточек
   */
   #renderFilmContainer = () => {
@@ -43,21 +40,21 @@ export default class FilmsPresenter {
     render(this.#filmListContainer, this.#filmList.element);
   };
 
-  /*
+  /**
   * Отрисовка опций сортировки
   */
   #renderSort = () => {
     render(new SortView(), this.#container);
   };
 
-  /*
+  /**
   * Отрисовка кнопки "Show more"
   */
   #renderMoreButton = () => {
     render(this.#showMoreButton, this.#filmList.element);
   };
 
-  /*
+  /**
   * Дорисовка карточек фильмов
   */
   #onLoadMoreCardClick = () => {
@@ -69,7 +66,7 @@ export default class FilmsPresenter {
     }
   };
 
-  /*
+  /**
   * Отрисовка части карточек
   */
   #renderCards = (from, to) => {
@@ -78,10 +75,14 @@ export default class FilmsPresenter {
       .forEach((movie) => this.#renderCard(movie));
   };
 
-  /*
+  /**
   * Отрисовка карточки фильма
   */
   #renderCard = (movie) => {
+    const cardComponent = new FilmCardPresenter(this.#filmListContainer.element, this.#comments);
+    cardComponent.init(movie);
+
+    /*
     const cardComponent = new FilmCardView(movie);
     let detailsComponent = null;
 
@@ -116,5 +117,6 @@ export default class FilmsPresenter {
 
     cardComponent.setLinkClickHandler(viewDetailsComponent);
     render(cardComponent, this.#filmListContainer.element);
+    */
   };
 }
