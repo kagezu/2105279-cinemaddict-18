@@ -4,7 +4,6 @@ import { render, remove, replace } from '../framework/render.js';
 import { isEscapeKey } from '../utils/common.js';
 
 const siteBodyElement = document.body;
-
 const isOpenPopap = () => Boolean(siteBodyElement.querySelector('.film-details'));
 
 export default class FilmCardPresenter {
@@ -13,7 +12,6 @@ export default class FilmCardPresenter {
   #comments;
   #detailsComponent = null;
   #cardComponent = null;
-  #isNewDetails;
 
   constructor(container, comments) {
     this.#container = container;
@@ -22,7 +20,6 @@ export default class FilmCardPresenter {
 
   init = (movie) => {
     this.#movie = movie;
-    this.#isNewDetails = true;
     const prevCardComponent = this.#cardComponent;
     this.#cardComponent = new FilmCardView(movie);
     this.#cardComponent.setLinkClickHandler(this.#viewDetailsComponent);
@@ -31,14 +28,13 @@ export default class FilmCardPresenter {
       render(this.#cardComponent, this.#container);
     }
 
-    if (this.this.#container.contains(prevCardComponent.element)) {
+    if (this.#container.contains(prevCardComponent?.element)) {
       replace(this.#cardComponent, prevCardComponent);
     }
   };
 
   destroy = () => {
     remove(this.#cardComponent);
-    remove(this.#detailsComponent);
   };
 
   #hideDetailsComponent = () => {
@@ -55,19 +51,15 @@ export default class FilmCardPresenter {
   };
 
   #viewDetailsComponent = () => {
-    if (isOpenPopap()) {
-      return;
-    }
-    if (!this.#detailsComponent || this.#isNewDetails) {
-      this.#isNewDetails = false;
+    if (!isOpenPopap()) {
       this.#detailsComponent = new FilmDetailsView(this.#movie, this.#comments);
       this.#detailsComponent.setCloseButtonClickHandler(() => {
         this.#hideDetailsComponent();
         window.removeEventListener('keydown', this.#onWindowKeydown);
       });
+      siteBodyElement.classList.add('hide-overflow');
+      render(this.#detailsComponent, siteBodyElement);
+      window.addEventListener('keydown', this.#onWindowKeydown);
     }
-    siteBodyElement.classList.add('hide-overflow');
-    render(this.#detailsComponent, siteBodyElement);
-    window.addEventListener('keydown', this.#onWindowKeydown);
   };
 }
