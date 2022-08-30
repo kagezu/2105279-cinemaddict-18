@@ -12,4 +12,6 @@ const filterTypeToText = {
   [FilterType.FAVORITES]: 'Favorites'
 };
 
-export { FilterType, filterTypeToText };
+const ESCAPE_KEY_NAME = 'Escape';
+
+export { FilterType, filterTypeToText, ESCAPE_KEY_NAME };
