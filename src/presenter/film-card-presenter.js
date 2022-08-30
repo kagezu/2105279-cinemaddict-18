@@ -1,16 +1,19 @@
 import FilmCardView from '../view/film-card-view.js';
 import FilmDetailsView from '../view/film-details-view.js';
-import { render, remove } from '../framework/render.js';
+import { render, remove, replace } from '../framework/render.js';
 import { isEscapeKey } from '../utils/common.js';
 
 const siteBodyElement = document.body;
+
+const isOpenPopap = () => Boolean(siteBodyElement.querySelector('.film-details'));
 
 export default class FilmCardPresenter {
   #container;
   #movie;
   #comments;
-  #detailsComponent;
-  #cardComponent;
+  #detailsComponent = null;
+  #cardComponent = null;
+  #isNewDetails;
 
   constructor(container, comments) {
     this.#container = container;
@@ -19,9 +22,23 @@ export default class FilmCardPresenter {
 
   init = (movie) => {
     this.#movie = movie;
+    this.#isNewDetails = true;
+    const prevCardComponent = this.#cardComponent;
     this.#cardComponent = new FilmCardView(movie);
     this.#cardComponent.setLinkClickHandler(this.#viewDetailsComponent);
-    render(this.#cardComponent, this.#container);
+
+    if (prevCardComponent === null) {
+      render(this.#cardComponent, this.#container);
+    }
+
+    if (this.this.#container.contains(prevCardComponent.element)) {
+      replace(this.#cardComponent, prevCardComponent);
+    }
+  };
+
+  destroy = () => {
+    remove(this.#cardComponent);
+    remove(this.#detailsComponent);
   };
 
   #hideDetailsComponent = () => {
@@ -38,10 +55,11 @@ export default class FilmCardPresenter {
   };
 
   #viewDetailsComponent = () => {
-    if (siteBodyElement.querySelector('.film-details')) {
+    if (isOpenPopap()) {
       return;
     }
-    if (!this.#detailsComponent) {
+    if (!this.#detailsComponent || this.#isNewDetails) {
+      this.#isNewDetails = false;
       this.#detailsComponent = new FilmDetailsView(this.#movie, this.#comments);
       this.#detailsComponent.setCloseButtonClickHandler(() => {
         this.#hideDetailsComponent();

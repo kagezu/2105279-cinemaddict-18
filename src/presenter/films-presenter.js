@@ -81,42 +81,5 @@ export default class FilmsPresenter {
   #renderCard = (movie) => {
     const cardComponent = new FilmCardPresenter(this.#filmListContainer.element, this.#comments);
     cardComponent.init(movie);
-
-    /*
-    const cardComponent = new FilmCardView(movie);
-    let detailsComponent = null;
-
-    const hideDetailsComponent = () => {
-      remove(detailsComponent);
-      siteBodyElement.classList.remove('hide-overflow');
-    };
-
-    const onWindowKeydown = (evt) => {
-      if (isEscapeKey(evt)) {
-        evt.preventDefault();
-        hideDetailsComponent();
-        window.removeEventListener('keydown', onWindowKeydown);
-      }
-    };
-
-    const viewDetailsComponent = () => {
-      if (siteBodyElement.querySelector('.film-details')) {
-        return;
-      }
-      if (!detailsComponent) {
-        detailsComponent = new FilmDetailsView(movie, this.#comments);
-        detailsComponent.setCloseButtonClickHandler(() => {
-          hideDetailsComponent();
-          window.removeEventListener('keydown', onWindowKeydown);
-        });
-      }
-      siteBodyElement.classList.add('hide-overflow');
-      render(detailsComponent, siteBodyElement);
-      window.addEventListener('keydown', onWindowKeydown);
-    };
-
-    cardComponent.setLinkClickHandler(viewDetailsComponent);
-    render(cardComponent, this.#filmListContainer.element);
-    */
   };
 }
