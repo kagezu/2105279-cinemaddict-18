@@ -5,6 +5,7 @@ import FilmListContainerView from '../view/film-list-container.js';
 import ShowMoreButtonView from '../view/show-more-button.js';
 import { render, remove } from '../framework/render.js';
 import FilmCardPresenter from './film-card-presenter.js';
+import { updateItem } from '../utils/common.js';
 
 const CARD_COUNT_PER_STEP = 5;
 
@@ -104,5 +105,10 @@ export default class FilmsPresenter {
     const cardComponent = new FilmCardPresenter(this.#filmListContainer.element, this.#comments);
     cardComponent.init(movie);
     this.#cardPresenter.set(cardComponent.id, cardComponent);
+  };
+
+  #handleCardChange = (updatedCard) => {
+    this.#movies = updateItem(this.#movies, updatedCard);
+    this.#cardPresenter.get(updatedCard.id).init(updatedCard);
   };
 }
