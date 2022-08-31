@@ -4,6 +4,7 @@ import { render, remove, replace } from '../framework/render.js';
 import { isEscapeKey } from '../utils/common.js';
 
 const siteBodyElement = document.body;
+const isOpenPopup = () => Boolean(siteBodyElement.querySelector('.film-details'));
 
 export default class FilmCardPresenter {
   #container;
@@ -65,7 +66,7 @@ export default class FilmCardPresenter {
   };
 
   #viewDetailsComponent = () => {
-    if (!this.#isOpenDetail) {
+    if (!isOpenPopup()) {
       this.#resetView();
       this.#detailsComponent = new FilmDetailsView(this.#movie, this.#comments);
       this.#detailsComponent.setWatchlistClickHandler(this.#handleWatchlistClick);
