@@ -4,7 +4,7 @@ import { render, remove, replace } from '../framework/render.js';
 import { isEscapeKey } from '../utils/common.js';
 
 const siteBodyElement = document.body;
-const isOpenPopap = () => Boolean(siteBodyElement.querySelector('.film-details'));
+const isOpenPopup = () => Boolean(siteBodyElement.querySelector('.film-details'));
 
 export default class FilmCardPresenter {
   #container;
@@ -13,6 +13,7 @@ export default class FilmCardPresenter {
   #detailsComponent = null;
   #cardComponent = null;
   #changeData = null;
+  #isOpenDetail = false;
 
   constructor(container, comments, changeData) {
     this.#container = container;
@@ -45,6 +46,7 @@ export default class FilmCardPresenter {
   #hideDetailsComponent = () => {
     remove(this.#detailsComponent);
     siteBodyElement.classList.remove('hide-overflow');
+    this.#isOpenDetail = false;
   };
 
   #onWindowKeydown = (evt) => {
@@ -56,7 +58,7 @@ export default class FilmCardPresenter {
   };
 
   #viewDetailsComponent = () => {
-    if (!isOpenPopap()) {
+    if (!isOpenPopup()) {
       this.#detailsComponent = new FilmDetailsView(this.#movie, this.#comments);
       this.#detailsComponent.setWatchlistClickHandler(this.#handleWatchlistClick);
       this.#detailsComponent.setWatchedClickHandler(this.#handleWatchedClick);
@@ -68,11 +70,12 @@ export default class FilmCardPresenter {
       siteBodyElement.classList.add('hide-overflow');
       render(this.#detailsComponent, siteBodyElement);
       window.addEventListener('keydown', this.#onWindowKeydown);
+      this.#isOpenDetail = true;
     }
   };
 
   #updateDetailsComponent = () => {
-    if (isOpenPopap()) {
+    if (this.#isOpenDetail) {
       this.#hideDetailsComponent();
       this.#viewDetailsComponent();
     }

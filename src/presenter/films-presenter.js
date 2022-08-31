@@ -107,6 +107,9 @@ export default class FilmsPresenter {
     this.#cardPresenter.set(movie.id, cardComponent);
   };
 
+  /**
+   * Обработчик обновления карточки фильмов
+   */
   #handleCardChange = (updatedCard) => {
     this.#movies = updateItem(this.#movies, updatedCard);
     this.#cardPresenter.get(updatedCard.id).init(updatedCard);
