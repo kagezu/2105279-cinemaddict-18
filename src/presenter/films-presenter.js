@@ -102,7 +102,7 @@ export default class FilmsPresenter {
   * Отрисовка карточки фильма
   */
   #renderCard = (movie) => {
-    const cardComponent = new FilmCardPresenter(this.#filmListContainer.element, this.#comments, this.#handleCardChange);
+    const cardComponent = new FilmCardPresenter(this.#filmListContainer.element, this.#comments, this.#handleCardChange, this.#handleResetDetail);
     cardComponent.init(movie);
     this.#cardPresenter.set(movie.id, cardComponent);
   };
@@ -113,5 +113,9 @@ export default class FilmsPresenter {
   #handleCardChange = (updatedCard) => {
     this.#movies = updateItem(this.#movies, updatedCard);
     this.#cardPresenter.get(updatedCard.id).init(updatedCard);
+  };
+
+  #handleResetDetail = () => {
+    this.#cardPresenter.forEach((presenter) => presenter.resetDetailsView());
   };
 }

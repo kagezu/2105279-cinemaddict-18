@@ -4,7 +4,6 @@ import { render, remove, replace } from '../framework/render.js';
 import { isEscapeKey } from '../utils/common.js';
 
 const siteBodyElement = document.body;
-const isOpenPopup = () => Boolean(siteBodyElement.querySelector('.film-details'));
 
 export default class FilmCardPresenter {
   #container;
@@ -14,11 +13,13 @@ export default class FilmCardPresenter {
   #cardComponent = null;
   #changeData = null;
   #isOpenDetail = false;
+  #resetView = null;
 
-  constructor(container, comments, changeData) {
+  constructor(container, comments, changeData, resetView) {
     this.#container = container;
     this.#comments = comments;
     this.#changeData = changeData;
+    this.#resetView = resetView;
   }
 
   init = (movie) => {
@@ -43,6 +44,12 @@ export default class FilmCardPresenter {
     remove(this.#cardComponent);
   };
 
+  resetDetailsView = () => {
+    if (this.#isOpenDetail) {
+      this.#hideDetailsComponent();
+    }
+  };
+
   #hideDetailsComponent = () => {
     remove(this.#detailsComponent);
     siteBodyElement.classList.remove('hide-overflow');
@@ -58,7 +65,8 @@ export default class FilmCardPresenter {
   };
 
   #viewDetailsComponent = () => {
-    if (!isOpenPopup()) {
+    if (!this.#isOpenDetail) {
+      this.#resetView();
       this.#detailsComponent = new FilmDetailsView(this.#movie, this.#comments);
       this.#detailsComponent.setWatchlistClickHandler(this.#handleWatchlistClick);
       this.#detailsComponent.setWatchedClickHandler(this.#handleWatchedClick);
