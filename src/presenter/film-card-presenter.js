@@ -3,9 +3,6 @@ import FilmDetailsView from '../view/film-details-view.js';
 import { render, remove, replace } from '../framework/render.js';
 import { isEscapeKey } from '../utils/common.js';
 
-const siteBodyElement = document.body;
-const isOpenPopup = () => Boolean(siteBodyElement.querySelector('.film-details'));
-
 export default class FilmCardPresenter {
   #container;
   #movie;
@@ -53,7 +50,7 @@ export default class FilmCardPresenter {
 
   #hideDetailsComponent = () => {
     remove(this.#detailsComponent);
-    siteBodyElement.classList.remove('hide-overflow');
+    document.body.classList.remove('hide-overflow');
     this.#isOpenDetail = false;
   };
 
@@ -66,7 +63,7 @@ export default class FilmCardPresenter {
   };
 
   #viewDetailsComponent = () => {
-    if (!isOpenPopup()) {
+    if (!FilmDetailsView.isOpenPopup()) {
       this.#resetView();
       this.#detailsComponent = new FilmDetailsView(this.#movie, this.#comments);
       this.#detailsComponent.setWatchlistClickHandler(this.#handleWatchlistClick);
@@ -76,8 +73,8 @@ export default class FilmCardPresenter {
         this.#hideDetailsComponent();
         window.removeEventListener('keydown', this.#onWindowKeydown);
       });
-      siteBodyElement.classList.add('hide-overflow');
-      render(this.#detailsComponent, siteBodyElement);
+      document.body.classList.add('hide-overflow');
+      render(this.#detailsComponent, document.body);
       window.addEventListener('keydown', this.#onWindowKeydown);
       this.#isOpenDetail = true;
     }

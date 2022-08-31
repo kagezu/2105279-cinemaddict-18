@@ -170,6 +170,8 @@ export default class FilmDetailsView extends AbstractView {
     return createFilmDetailsTemplate(this.#movie, this.#comments);
   }
 
+  static isOpenPopup = () => Boolean(document.body.querySelector('.film-details'));
+
   // Закрытие попапа
 
   setCloseButtonClickHandler = (callback) => {
