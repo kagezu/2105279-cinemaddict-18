@@ -58,6 +58,9 @@ export default class FilmCardPresenter {
   #viewDetailsComponent = () => {
     if (!isOpenPopap()) {
       this.#detailsComponent = new FilmDetailsView(this.#movie, this.#comments);
+      this.#detailsComponent.setWatchlistClickHandler(this.#handleWatchlistClick);
+      this.#detailsComponent.setWatchedClickHandler(this.#handleWatchedClick);
+      this.#detailsComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
       this.#detailsComponent.setCloseButtonClickHandler(() => {
         this.#hideDetailsComponent();
         window.removeEventListener('keydown', this.#onWindowKeydown);
@@ -68,18 +71,28 @@ export default class FilmCardPresenter {
     }
   };
 
+  #updateDetailsComponent = () => {
+    if (isOpenPopap()) {
+      this.#hideDetailsComponent();
+      this.#viewDetailsComponent();
+    }
+  };
+
   #handleWatchlistClick = () => {
     this.#movie.userDetails.watchList = !this.#movie.userDetails.watchList;
     this.#changeData(this.#movie);
+    this.#updateDetailsComponent();
   };
 
   #handleWatchedClick = () => {
     this.#movie.userDetails.alreadyWatched = !this.#movie.userDetails.alreadyWatched;
     this.#changeData(this.#movie);
+    this.#updateDetailsComponent();
   };
 
   #handleFavoriteClick = () => {
     this.#movie.userDetails.favorite = !this.#movie.userDetails.favorite;
     this.#changeData(this.#movie);
+    this.#updateDetailsComponent();
   };
 }
