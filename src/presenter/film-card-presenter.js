@@ -29,7 +29,7 @@ export default class FilmCardPresenter {
     this.#cardComponent.setWatchedClickHandler(this.#handleWatchedClick);
     this.#cardComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
 
-    if (prevCardComponent === null) {
+    if (!prevCardComponent) {
       render(this.#cardComponent, this.#container);
     }
 

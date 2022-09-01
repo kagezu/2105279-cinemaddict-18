@@ -3,7 +3,7 @@ import { ESCAPE_KEY_NAME } from '../const.js';
 /*
 *Преобразование первый символ в заглавный
 */
-export const transformFirstCharToUpperCase = (str) => str ? `${str[0].toUpperCase()}${str.slice(1)}` : str;
+export const transformFirstCharToUpperCase = (str) => `${str[0].toUpperCase()}${str.slice(1)}`;
 
 /*
 * Нажата ли Escape
