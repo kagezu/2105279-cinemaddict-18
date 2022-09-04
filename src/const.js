@@ -5,6 +5,13 @@ const FilterType = {
   FAVORITES: 'favorites'
 };
 
+const SortType = {
+  DEFAULT: 'default',
+  DATE: 'date',
+  RATING: 'rating'
+
+};
+
 const filterTypeToText = {
   [FilterType.ALL]: 'All movies',
   [FilterType.WATCHLIST]: 'Watchlist',
@@ -14,4 +21,4 @@ const filterTypeToText = {
 
 const ESCAPE_KEY_NAME = 'Escape';
 
-export { FilterType, filterTypeToText, ESCAPE_KEY_NAME };
+export { FilterType, SortType, filterTypeToText, ESCAPE_KEY_NAME };
