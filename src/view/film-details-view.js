@@ -83,12 +83,21 @@ const createComments = (comments, listComments) => {
     .join('') : '';
   return `<ul class="film-details__comments-list">${template}</ul>`;
 };
-const createEmojiButton = (emotion) => `
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${emotion}" value="${emotion}">
+const createEmojiButton = (emotion, isChecked) => `
+            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio"
+            id="emoji-${emotion}"
+            value="${emotion}"
+            ${isChecked ? ' checked' : ''}>
             <label class="film-details__emoji-label" for="emoji-${emotion}">
               <img src="./images/emoji/${emotion}.png" width="30" height="30" alt="emoji" data-emotion="${emotion}">
             </label>`;
-const createEmojiButtons = () => emotions.map(createEmojiButton).join('');
+const createEmojiButtons = (current) => {
+  const buttonList = emotions.map((emotion) => createEmojiButton(emotion, current === emotion)).join('');
+  return `
+    <div class="film-details__emoji-list">
+      ${buttonList}
+    </div>`;
+};
 
 const createFilmDetailsTemplate = ({ movie, listComments, emotion }) => {
   const { comments, filmInfo, userDetails } = movie;
@@ -147,10 +156,7 @@ const createFilmDetailsTemplate = ({ movie, listComments, emotion }) => {
           <label class="film-details__comment-label">
             <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
           </label>
-
-          <div class="film-details__emoji-list">
-           ${createEmojiButtons()}
-          </div>
+          ${createEmojiButtons(emotion)}
         </form>
       </section>
     </div>
@@ -172,8 +178,9 @@ export default class FilmDetailsView extends AbstractStatefulView {
 
   static parseMovieToState = (movie, comments) => ({
     movie,
-    'listComments': comments,
-    emotion: null
+    listComments: comments,
+    emotion: null,
+    scroll: null
   });
 
   static parseStateToTask = (state) => ({
@@ -189,6 +196,8 @@ export default class FilmDetailsView extends AbstractStatefulView {
     this.element.querySelector('.film-details__control-button--watched').addEventListener('click', this.#watchedClickHandler);
     this.element.querySelector('.film-details__control-button--favorite').addEventListener('click', this.#favoriteClickHandler);
     this.element.querySelector('.film-details__emoji-list').addEventListener('click', this.#emotionClickHandler);
+
+    this.element.scrollTop = this._state.scroll;
   };
 
   // Закрытие попапа
@@ -243,7 +252,13 @@ export default class FilmDetailsView extends AbstractStatefulView {
   #emotionClickHandler = (evt) => {
     evt.preventDefault();
     if (evt.target.tagName === 'IMG') {
-      this.updateElement({ emotion: evt.target.dataset.emotion });
+      const emotion = evt.target.dataset.emotion;
+      if (this._state.emotion !== emotion) {
+        this.updateElement({
+          emotion: evt.target.dataset.emotion,
+          scroll: this.element.scrollTop
+        });
+      }
     }
   };
 }
