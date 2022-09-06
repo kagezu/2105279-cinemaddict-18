@@ -98,8 +98,12 @@ const createEmojiButtons = (current) => {
       ${buttonList}
     </div>`;
 };
+const createTextarea = (message) => `
+  <label class="film-details__comment-label">
+    <textarea class="film-details__comment-input" name="comment" placeholder="Select reaction below and write comment here">${message ? message : ''}</textarea>
+  </label>`;
 
-const createFilmDetailsTemplate = ({ movie, listComments, emotion }) => {
+const createFilmDetailsTemplate = ({ movie, listComments, emotion, message }) => {
   const { comments, filmInfo, userDetails } = movie;
   const { title, alternativeTitle, totalRating, poster, ageRating, director, writers, actors, release, runtime, genre, description } = filmInfo;
   const { watchList, alreadyWatched, favorite } = userDetails;
@@ -153,9 +157,7 @@ const createFilmDetailsTemplate = ({ movie, listComments, emotion }) => {
         <form class="film-details__new-comment" action="" method="get">
           <div class="film-details__add-emoji-label">${createSmile(emotion)}</div>
 
-          <label class="film-details__comment-label">
-            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
-          </label>
+          ${createTextarea(message)}
           ${createEmojiButtons(emotion)}
         </form>
       </section>
@@ -180,7 +182,8 @@ export default class FilmDetailsView extends AbstractStatefulView {
     movie,
     listComments: comments,
     emotion: null,
-    scroll: null
+    scroll: null,
+    message: null
   });
 
   static parseStateToTask = (state) => ({
@@ -196,8 +199,10 @@ export default class FilmDetailsView extends AbstractStatefulView {
     this.element.querySelector('.film-details__control-button--watched').addEventListener('click', this.#watchedClickHandler);
     this.element.querySelector('.film-details__control-button--favorite').addEventListener('click', this.#favoriteClickHandler);
     this.element.querySelector('.film-details__emoji-list').addEventListener('click', this.#emotionClickHandler);
+    this.element.querySelector('.film-details__comment-input').addEventListener('input', this.#messageInputHandler);
 
     this.element.scrollTop = this._state.scroll;
+    this.element.addEventListener('scroll', this.#positionScrollHandler);
   };
 
   // Закрытие попапа
@@ -255,10 +260,26 @@ export default class FilmDetailsView extends AbstractStatefulView {
       const emotion = evt.target.dataset.emotion;
       if (this._state.emotion !== emotion) {
         this.updateElement({
-          emotion: evt.target.dataset.emotion,
-          scroll: this.element.scrollTop
+          emotion: evt.target.dataset.emotion
         });
       }
     }
+  };
+
+  // Сохранение позиции скроллинга в состояние
+
+  #positionScrollHandler = () => {
+    this._setState({
+      scroll: this.element.scrollTop
+    });
+  };
+
+  // Сохранение нового комментария в состояние
+
+  #messageInputHandler = (evt) => {
+    evt.preventDefault();
+    this._setState({
+      message: evt.target.value
+    });
   };
 }
