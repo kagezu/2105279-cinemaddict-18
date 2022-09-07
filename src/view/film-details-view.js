@@ -9,44 +9,46 @@ const createOriginalTitle = (title) => title ? `<p class="film-details__title-or
 const createTotalRating = (rating) => rating ? ` <div class="film-details__rating">
               <p class="film-details__total-rating">${rating}</p></div>` : '';
 const createDirector = (director) => director ? `
-            <tr class="film-details__row">
-              <td class="film-details__term">Director</td>
-              <td class="film-details__cell">${director}</td>
-            </tr>` : '';
+  <tr class="film-details__row">
+    <td class="film-details__term">Director</td>
+    <td class="film-details__cell">${director}</td>
+  </tr>` : '';
 const createWriters = (writers) => writers.length ? `
-            <tr class="film-details__row">
-              <td class="film-details__term">Writers</td>
-              <td class="film-details__cell">${writers.join(', ')}</td>
-            </tr>` : '';
+  <tr class="film-details__row">
+    <td class="film-details__term">Writers</td>
+    <td class="film-details__cell">${writers.join(', ')}</td>
+  </tr>` : '';
 const createActors = (actors) => actors.length ? `
-            <tr class="film-details__row">
-              <td class="film-details__term">Actors</td>
-              <td class="film-details__cell">${actors.join(', ')}</td>
-            </tr>` : '';
+  <tr class="film-details__row">
+    <td class="film-details__term">Actors</td>
+    <td class="film-details__cell">${actors.join(', ')}</td>
+  </tr>` : '';
 const createRelease = (release) => release ? `
-            <tr class="film-details__row">
-              <td class="film-details__term">Release Date</td>
-              <td class="film-details__cell">${formatStringToDate(release)}</td>
-            </tr>` : '';
+  <tr class="film-details__row">
+    <td class="film-details__term">Release Date</td>
+    <td class="film-details__cell">${formatStringToDate(release)}</td>
+  </tr>` : '';
 const createRuntime = (runtime) => runtime ? `
-            <tr class="film-details__row">
-              <td class="film-details__term">Runtime</td>
-              <td class="film-details__cell">${formatMinutesToTime(runtime)}</td>
-            </tr>` : '';
+  <tr class="film-details__row">
+    <td class="film-details__term">Runtime</td>
+    <td class="film-details__cell">${formatMinutesToTime(runtime)}</td>
+  </tr>` : '';
 const createCountry = () => `
-            <tr class="film-details__row">
-              <td class="film-details__term">Country</td>
-              <td class="film-details__cell">USA</td>
-            </tr>`;
+  <tr class="film-details__row">
+    <td class="film-details__term">Country</td>
+    <td class="film-details__cell">USA</td>
+  </tr>`;
 const createGenre = (genre) => `<span class="film-details__genre">${genre}</span>`;
 const createGenres = (genres) => {
-  const genreString = genres.length ? genres.reduce(createGenre) : '';
-  return genreString ? `<tr class="film-details__row">
-              <td class="film-details__term">Genres</td>
-              <td class="film-details__cell">
-               ${genreString}
-              </td>
-            </tr>` : '';
+  const genreString = genres.length ? genres.map(createGenre).join('') : '';
+  return genreString ? `
+  <tr class="film-details__row">
+    <td class="film-details__term">
+    ${genres.length === 1 ? 'Genre' : 'Genres'}</td>
+    <td class="film-details__cell">
+     ${genreString}
+    </td>
+  </tr>` : '';
 };
 const createDescription = (description) => description ? `<p class="film-details__film-description">${description}</p>` : '';
 const createButton = (id, text, activated) => {
@@ -166,12 +168,16 @@ const createFilmDetailsTemplate = ({ movie, listComments, emotion, message }) =>
 </section>`;
 };
 
+// Открытый попап
+let openDetailsComponent = null;
+
 export default class FilmDetailsView extends AbstractStatefulView {
 
   constructor(movie, comments) {
     super();
     this._state = FilmDetailsView.parseMovieToState(movie, comments);
     this._restoreHandlers();
+    openDetailsComponent = this;
   }
 
   get template() {
@@ -191,7 +197,7 @@ export default class FilmDetailsView extends AbstractStatefulView {
     'comments': state.comments
   });
 
-  static isOpenPopup = () => Boolean(document.body.querySelector('.film-details'));
+  static getOpenPopup = () => openDetailsComponent;
 
   _restoreHandlers = () => {
     this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#closeButtonClickHandler);

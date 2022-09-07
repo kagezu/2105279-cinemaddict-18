@@ -63,7 +63,9 @@ export default class FilmCardPresenter {
   };
 
   #viewDetailsComponent = () => {
-    if (!FilmDetailsView.isOpenPopup()) {
+    if (!this.#isOpenDetail) {
+      remove(FilmDetailsView.getOpenPopup());
+
       this.#resetView();
       this.#detailsComponent = new FilmDetailsView(this.#movie, this.#comments);
       this.#detailsComponent.setWatchlistClickHandler(this.#handleWatchlistClick);
