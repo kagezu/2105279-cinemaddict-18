@@ -1,13 +1,20 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { formatStringToYear } from '../utils/date.js';
+import { formatStringToYear, formatMinutesToTime } from '../utils/date.js';
 
 const createTitle = (title) => title ? `<h3 class="film-card__title">${title}</h3>` : '';
 const createRating = (rating) => rating ? `<p class="film-card__rating">${rating}</p>` : '';
 const createYear = ({ date }) => date ? `<span class="film-card__year">${formatStringToYear(date)}</span>` : '';
-const createDuration = (runtime) => runtime ? `<span class="film-card__duration">${runtime} m</span>` : '';
+const createDuration = (runtime) => runtime ? `<span class="film-card__duration">${formatMinutesToTime(runtime)}</span>` : '';
 const createGenre = (genres) => genres ? `<span class="film-card__genre">${genres.join(' ')}</span>` : '';
 const createPoster = (poster) => poster ? `<img src="${poster}" alt="" class="film-card__poster">` : '';
-const createDescription = (description) => description ? `<p class="film-card__description">${description}</p>` : '';
+const createDescription = (description) => {
+  let result = '';
+  if (description) {
+    const text = description.length > 140 ? `${description.slice(0, 139)}...` : description;
+    result = `<p class="film-card__description">${text}</p>`;
+  }
+  return result;
+};
 const createCountComments = ({ length }) => {
   const count = length ? `${length} comments` : 'No comments yet';
   return `<span class="film-card__comments">${count}</span>`;
