@@ -1,4 +1,4 @@
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { formatStringToDate, formatStringToDateWithTime, formatMinutesToTime } from '../utils/date.js';
 import { emotions } from '../mock/comments.js';
 
@@ -54,6 +54,7 @@ const createButton = (id, text, activated) => {
   return `<button type="button" class="film-details__control-button film-details__control-button--${id}${style}" id="${id}" name="${id}">${text}</button>`;
 };
 const createCountComments = (count) => `<h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${count ? count : 0}</span></h3>`;
+const createSmile = (emotion) => emotion ? `<img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-smile">` : '';
 const createComment = (message) => {
   if (!message) {
     return;
@@ -61,7 +62,7 @@ const createComment = (message) => {
   const { author, comment, date, emotion } = message;
   return ` <li class="film-details__comment">
             <span class="film-details__comment-emoji">
-              <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-smile">
+              ${createSmile(emotion)}
             </span>
             <div>
               <p class="film-details__comment-text">${comment}</p>
@@ -82,14 +83,28 @@ const createComments = (comments, listComments) => {
     .join('') : '';
   return `<ul class="film-details__comments-list">${template}</ul>`;
 };
-const createEmojiButton = (emotion) => `
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${emotion}" value="${emotion}">
+const createEmojiButton = (emotion, isChecked) => `
+            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio"
+            id="emoji-${emotion}"
+            value="${emotion}"
+            ${isChecked ? ' checked' : ''}>
             <label class="film-details__emoji-label" for="emoji-${emotion}">
-              <img src="./images/emoji/${emotion}.png" width="30" height="30" alt="emoji">
+              <img src="./images/emoji/${emotion}.png" width="30" height="30" alt="emoji" data-emotion="${emotion}">
             </label>`;
-const createEmojiButtons = () => emotions.map(createEmojiButton).join('');
+const createEmojiButtons = (current) => {
+  const buttonList = emotions.map((emotion) => createEmojiButton(emotion, current === emotion)).join('');
+  return `
+    <div class="film-details__emoji-list">
+      ${buttonList}
+    </div>`;
+};
+const createTextarea = (message) => `
+  <label class="film-details__comment-label">
+    <textarea class="film-details__comment-input" name="comment" placeholder="Select reaction below and write comment here">${message ? message : ''}</textarea>
+  </label>`;
 
-const createFilmDetailsTemplate = ({ comments, filmInfo, userDetails }, listComments) => {
+const createFilmDetailsTemplate = ({ movie, listComments, emotion, message }) => {
+  const { comments, filmInfo, userDetails } = movie;
   const { title, alternativeTitle, totalRating, poster, ageRating, director, writers, actors, release, runtime, genre, description } = filmInfo;
   const { watchList, alreadyWatched, favorite } = userDetails;
   return `<section class="film-details">
@@ -140,15 +155,10 @@ const createFilmDetailsTemplate = ({ comments, filmInfo, userDetails }, listComm
         ${createComments(comments, listComments)}
 
         <form class="film-details__new-comment" action="" method="get">
-          <div class="film-details__add-emoji-label"></div>
+          <div class="film-details__add-emoji-label">${createSmile(emotion)}</div>
 
-          <label class="film-details__comment-label">
-            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
-          </label>
-
-          <div class="film-details__emoji-list">
-           ${createEmojiButtons()}
-          </div>
+          ${createTextarea(message)}
+          ${createEmojiButtons(emotion)}
         </form>
       </section>
     </div>
@@ -156,21 +166,44 @@ const createFilmDetailsTemplate = ({ comments, filmInfo, userDetails }, listComm
 </section>`;
 };
 
-export default class FilmDetailsView extends AbstractView {
-  #comments;
-  #movie;
+export default class FilmDetailsView extends AbstractStatefulView {
 
   constructor(movie, comments) {
     super();
-    this.#movie = movie;
-    this.#comments = comments;
+    this._state = FilmDetailsView.parseMovieToState(movie, comments);
+    this._restoreHandlers();
   }
 
   get template() {
-    return createFilmDetailsTemplate(this.#movie, this.#comments);
+    return createFilmDetailsTemplate(this._state);
   }
 
+  static parseMovieToState = (movie, comments) => ({
+    movie,
+    listComments: comments,
+    emotion: null,
+    scroll: null,
+    message: null
+  });
+
+  static parseStateToTask = (state) => ({
+    'movie': state.movie,
+    'comments': state.comments
+  });
+
   static isOpenPopup = () => Boolean(document.body.querySelector('.film-details'));
+
+  _restoreHandlers = () => {
+    this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#closeButtonClickHandler);
+    this.element.querySelector('.film-details__control-button--watchlist').addEventListener('click', this.#watchlistClickHandler);
+    this.element.querySelector('.film-details__control-button--watched').addEventListener('click', this.#watchedClickHandler);
+    this.element.querySelector('.film-details__control-button--favorite').addEventListener('click', this.#favoriteClickHandler);
+    this.element.querySelector('.film-details__emoji-list').addEventListener('click', this.#emotionClickHandler);
+    this.element.querySelector('.film-details__comment-input').addEventListener('input', this.#messageInputHandler);
+
+    this.element.scrollTop = this._state.scroll;
+    this.element.addEventListener('scroll', this.#positionScrollHandler);
+  };
 
   // Закрытие попапа
 
@@ -220,4 +253,33 @@ export default class FilmDetailsView extends AbstractView {
     this._callback.favoriteClick();
   };
 
+  // Выбор эмоции
+  #emotionClickHandler = (evt) => {
+    evt.preventDefault();
+    if (evt.target.tagName === 'IMG') {
+      const emotion = evt.target.dataset.emotion;
+      if (this._state.emotion !== emotion) {
+        this.updateElement({
+          emotion: evt.target.dataset.emotion
+        });
+      }
+    }
+  };
+
+  // Сохранение позиции скроллинга в состояние
+
+  #positionScrollHandler = () => {
+    this._setState({
+      scroll: this.element.scrollTop
+    });
+  };
+
+  // Сохранение нового комментария в состояние
+
+  #messageInputHandler = (evt) => {
+    evt.preventDefault();
+    this._setState({
+      message: evt.target.value
+    });
+  };
 }
