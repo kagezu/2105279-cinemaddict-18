@@ -1,4 +1,5 @@
 import { ESCAPE_KEY_NAME } from '../const.js';
+import dayjs from 'dayjs';
 
 /*
 *Преобразование первый символ в заглавный
@@ -16,10 +17,12 @@ export const updateItem = (items, update) => {
   if (index === -1) {
     return items;
   }
-
   return [
     ...items.slice(0, index),
     update,
     ...items.slice(index + 1),
   ];
 };
+
+export const sortDate = (a, b) => dayjs(a.filmInfo.release.date).diff(b.filmInfo.release.date) > 0;
+export const sortRating = (a, b) => a.filmInfo.totalRating > b.filmInfo.totalRating;

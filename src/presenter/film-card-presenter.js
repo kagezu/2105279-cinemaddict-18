@@ -6,16 +6,16 @@ import { isEscapeKey } from '../utils/common.js';
 export default class FilmCardPresenter {
   #container;
   #movie;
-  #comments;
+  #commentsModel;
   #detailsComponent = null;
   #cardComponent = null;
   #changeData = null;
   #isOpenDetail = false;
   #resetView = null;
 
-  constructor(container, comments, changeData, resetView) {
+  constructor(container, commentsModel, changeData, resetView) {
     this.#container = container;
-    this.#comments = comments;
+    this.#commentsModel = commentsModel;
     this.#changeData = changeData;
     this.#resetView = resetView;
   }
@@ -66,7 +66,7 @@ export default class FilmCardPresenter {
     if (!this.#isOpenDetail) {
       remove(FilmDetailsView.getOpenPopup());
       this.#resetView();
-      this.#detailsComponent = new FilmDetailsView(this.#movie, this.#comments);
+      this.#detailsComponent = new FilmDetailsView(this.#movie, this.#commentsModel.comments);
       this.#detailsComponent.setWatchlistClickHandler(this.#handleWatchlistClick);
       this.#detailsComponent.setWatchedClickHandler(this.#handleWatchedClick);
       this.#detailsComponent.setFavoriteClickHandler(this.#handleFavoriteClick);

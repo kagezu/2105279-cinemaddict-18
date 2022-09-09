@@ -5,5 +5,7 @@ import Observable from '../framework/observable.js';
 export default class MovieModel extends Observable {
   #movies = Array.from({ length: getRandomInt(0, 17) }, generateMovie);
 
-  get = () => this.#movies;
+  get movies() {
+    return this.#movies;
+  }
 }

@@ -14,10 +14,10 @@ const commentsModel = new CommentsModel();
 
 render(new ProfileView(), siteHeaderElement);
 
-const filters = generateFilter(movieModel.get());
+const filters = generateFilter(movieModel.movies);
 
 render(new NavigationView(filters), siteMainElement);
 
 
-const filmsPresenter = new FilmsPresenter();
-filmsPresenter.init(siteMainElement, movieModel.get(), commentsModel.get());
+const filmsPresenter = new FilmsPresenter(siteMainElement);
+filmsPresenter.init(movieModel, commentsModel);

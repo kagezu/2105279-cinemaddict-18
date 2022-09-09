@@ -5,7 +5,7 @@ import FilmListContainerView from '../view/film-list-container.js';
 import ShowMoreButtonView from '../view/show-more-button.js';
 import { render, remove } from '../framework/render.js';
 import FilmCardPresenter from './film-card-presenter.js';
-import { updateItem } from '../utils/common.js';
+import { sortDate, sortRating } from '../utils/common.js';
 import { SortType } from '../const.js';
 
 const CARD_COUNT_PER_STEP = 5;
@@ -17,39 +17,47 @@ export default class FilmsPresenter {
   #sortComponent;
   #filmList;
   #container;
-  #movies;
-  #comments;
-  #renderedCardCount = 0;
+  #commentsModel;
+  #renderedCardCount;
   #cardPresenter = new Map();
   #currentSortType = SortType.DEFAULT;
-  #sourcedFilmCards = [];
+  #movieModel;
 
-  init = (container, movies, comments) => {
+  constructor(container) {
     this.#container = container;
-    this.#movies = movies;
-    this.#sourcedFilmCards = [...movies];
-    this.#comments = comments;
+  }
+
+  init = (movieModel, commentsModel) => {
+    this.#movieModel = movieModel;
+    this.#commentsModel = commentsModel;
     this.#renderViews();
   };
 
   get movies() {
-    return this.#movies;
+    switch (this.#currentSortType) {
+      case SortType.DATE:
+        return [...this.#movieModel.movies].sort(sortDate);
+      case SortType.RATING:
+        return [...this.#movieModel.movies].sort(sortRating);
+    }
+    return this.#movieModel.movies;
   }
 
   get comments() {
-    return this.#comments;
+    return this.#commentsModel;
   }
 
   /**
   * Отрисовка всех шаблонов
   */
   #renderViews = () => {
+    this.#renderedCardCount = 0;
     this.#showMoreButton = new ShowMoreButtonView();
-    this.#showMoreButton.setClickHandler(this.#onLoadMoreCardClick);
+    this.#showMoreButton.setClickHandler(this.#handleLoadMoreCardClick);
     this.#renderSort();
     this.#renderFilmContainer();
     this.#renderMoreButton();
-    this.#onLoadMoreCardClick();
+    this.#handleLoadMoreCardClick();
   };
 
   /**
@@ -57,7 +65,7 @@ export default class FilmsPresenter {
   */
   #renderFilmContainer = () => {
     this.#filmsContainer = new FilmsView();
-    this.#filmList = new FilmListView(!this.#movies.length);
+    this.#filmList = new FilmListView(!this.movies.length);
     this.#filmListContainer = new FilmListContainerView();
 
     render(this.#filmsContainer, this.#container);
@@ -84,11 +92,11 @@ export default class FilmsPresenter {
   /**
   * Дорисовка карточек фильмов
   */
-  #onLoadMoreCardClick = () => {
-    const lastComponent = Math.min(this.#renderedCardCount + CARD_COUNT_PER_STEP, this.#movies.length);
+  #handleLoadMoreCardClick = () => {
+    const lastComponent = Math.min(this.#renderedCardCount + CARD_COUNT_PER_STEP, this.movies.length);
     this.#renderCardList(this.#renderedCardCount, lastComponent);
     this.#renderedCardCount = lastComponent;
-    if (this.#renderedCardCount === this.#movies.length) {
+    if (this.#renderedCardCount === this.movies.length) {
       remove(this.#showMoreButton);
     }
   };
@@ -97,7 +105,7 @@ export default class FilmsPresenter {
   * Отрисовка части карточек
   */
   #renderCardList = (from, to) => {
-    this.#movies
+    this.movies
       .slice(from, to)
       .forEach((movie) => this.#renderCard(movie));
   };
@@ -120,7 +128,7 @@ export default class FilmsPresenter {
   * Отрисовка карточки фильма
   */
   #renderCard = (movie) => {
-    const cardComponent = new FilmCardPresenter(this.#filmListContainer.element, this.#comments, this.#handleCardChange, this.#handleResetDetail);
+    const cardComponent = new FilmCardPresenter(this.#filmListContainer.element, this.#commentsModel, this.#handleCardChange, this.#handleResetDetail);
     cardComponent.init(movie);
     this.#cardPresenter.set(movie.id, cardComponent);
   };
@@ -130,15 +138,8 @@ export default class FilmsPresenter {
    * Обработчик сортировки карточек фильмов
    */
   #handleSortTypeChange = (sortType) => {
-    switch (sortType) {
-      case SortType.DATE:
-        this.#movies.sort((a, b) => a.filmInfo.release.date > b.filmInfo.release.date);
-        break;
-      case SortType.RATING:
-        this.#movies.sort((a, b) => a.filmInfo.totalRating > b.filmInfo.totalRating);
-        break;
-      default:
-        this.#movies = [...this.#sourcedFilmCards];
+    if (this.#currentSortType === sortType) {
+      return;
     }
     this.#currentSortType = sortType;
     this.#clearViews();
@@ -149,7 +150,7 @@ export default class FilmsPresenter {
    * Обработчик обновления карточки фильмов
    */
   #handleCardChange = (updatedCard) => {
-    this.#movies = updateItem(this.#movies, updatedCard);
+    // this.#movies = updateItem(this.#movies, updatedCard);
     this.#cardPresenter.get(updatedCard.id).init(updatedCard);
   };
 
