@@ -32,6 +32,14 @@ export default class FilmsPresenter {
     this.#renderViews();
   };
 
+  get movies() {
+    return this.#movies;
+  }
+
+  get comments() {
+    return this.#comments;
+  }
+
   /**
   * Отрисовка всех шаблонов
   */
@@ -132,7 +140,6 @@ export default class FilmsPresenter {
       default:
         this.#movies = [...this.#sourcedFilmCards];
     }
-
     this.#currentSortType = sortType;
     this.#clearViews();
     this.#renderViews();
