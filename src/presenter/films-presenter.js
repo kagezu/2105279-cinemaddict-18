@@ -13,8 +13,8 @@ const CARD_COUNT_PER_STEP = 5;
 export default class FilmsPresenter {
   #filmsContainer;
   #filmListContainer;
-  #showMoreButton;
-  #sortComponent;
+  #showMoreButton = null;
+  #sortComponent = null;
   #filmList;
   #container;
   #commentsModel;
@@ -49,22 +49,15 @@ export default class FilmsPresenter {
     return this.#commentsModel;
   }
 
-  /**
-  * Отрисовка всех шаблонов
-  */
+  /**Отрисовка всех шаблонов*/
   #renderViews = () => {
-    this.#renderedCardCount = 0;
-    this.#showMoreButton = new ShowMoreButtonView();
-    this.#showMoreButton.setClickHandler(this.#handleLoadMoreCardClick);
     this.#renderSort();
     this.#renderFilmContainer();
     this.#renderMoreButton();
     this.#handleLoadMoreCardClick();
   };
 
-  /**
-  * Отрисовка контейнера для карточек
-  */
+  /**Отрисовка контейнера для карточек*/
   #renderFilmContainer = () => {
     this.#filmsContainer = new FilmsView();
     this.#filmList = new FilmListView(!this.movies.length);
@@ -75,25 +68,22 @@ export default class FilmsPresenter {
     render(this.#filmListContainer, this.#filmList.element);
   };
 
-  /**
-  * Отрисовка опций сортировки
-  */
+  /**Отрисовка опций сортировки*/
   #renderSort = () => {
     this.#sortComponent = new SortView(this.#currentSortType);
     render(this.#sortComponent, this.#container);
     this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
   };
 
-  /**
-  * Отрисовка кнопки "Show more"
-  */
+  /**Отрисовка кнопки "Show more"*/
   #renderMoreButton = () => {
+    this.#renderedCardCount = 0;
+    this.#showMoreButton = new ShowMoreButtonView();
+    this.#showMoreButton.setClickHandler(this.#handleLoadMoreCardClick);
     render(this.#showMoreButton, this.#filmList.element);
   };
 
-  /**
-  * Дорисовка карточек фильмов
-  */
+  /**Дорисовка карточек фильмов*/
   #handleLoadMoreCardClick = () => {
     const lastComponent = Math.min(this.#renderedCardCount + CARD_COUNT_PER_STEP, this.movies.length);
     this.#renderCardList(this.#renderedCardCount, lastComponent);
@@ -103,18 +93,14 @@ export default class FilmsPresenter {
     }
   };
 
-  /**
-  * Отрисовка части карточек
-  */
+  /**Отрисовка части карточек*/
   #renderCardList = (from, to) => {
     this.movies
       .slice(from, to)
       .forEach((movie) => this.#renderCard(movie));
   };
 
-  /**
-  * Очистка всех шаблонов
-  */
+  /**Очистка всех шаблонов*/
   #clearViews = () => {
     this.#cardPresenter.forEach((presenter) => presenter.destroy());
     this.#cardPresenter.clear();
@@ -126,9 +112,7 @@ export default class FilmsPresenter {
     remove(this.#sortComponent);
   };
 
-  /**
-  * Отрисовка карточки фильма
-  */
+  /**Отрисовка карточки фильма*/
   #renderCard = (movie) => {
     const cardComponent = new FilmCardPresenter(this.#filmListContainer.element, this.#commentsModel, this.#handleViewAction, this.#handleResetDetail);
     cardComponent.init(movie);
@@ -157,7 +141,8 @@ export default class FilmsPresenter {
   #handleViewAction = (actionType, updateType, update) => {
     switch (actionType) {
       case UserAction.UPDATE_MOVIE:
-        this.#movieModel.updateMovie(updateType, update);
+        // this.#movieModel.updateMovie(updateType, update);
+        this.#cardPresenter.get(update.id).init(update);
         break;
       case UserAction.ADD_COMMENT:
         this.#commentsModel.addComment(updateType, update);
@@ -172,11 +157,15 @@ export default class FilmsPresenter {
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
       case UpdateType.PATCH:
-        this.#cardPresenter.get(data.id).init(data);
         break;
       case UpdateType.MINOR:
+        this.#cardPresenter.get(data.id).init(data);
+        this.#clearViews();
+        this.#renderViews();
         break;
       case UpdateType.MAJOR:
+        this.#clearViews();
+        this.#renderViews();
         break;
     }
     this.#movieModel.updateMovie(data);

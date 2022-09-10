@@ -97,6 +97,7 @@ export default class FilmCardPresenter {
       UpdateType.MINOR,
       this.#movie
     );
+    this.#updateDetailsComponent();
   };
 
   #handleWatchedClick = () => {
@@ -106,6 +107,7 @@ export default class FilmCardPresenter {
       UpdateType.MINOR,
       this.#movie
     );
+    this.#updateDetailsComponent();
   };
 
   #handleFavoriteClick = () => {
@@ -115,6 +117,7 @@ export default class FilmCardPresenter {
       UpdateType.MINOR,
       this.#movie
     );
+    this.#updateDetailsComponent();
   };
 
 }
