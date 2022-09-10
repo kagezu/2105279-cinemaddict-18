@@ -2,6 +2,7 @@ import FilmCardView from '../view/film-card-view.js';
 import FilmDetailsView from '../view/film-details-view.js';
 import { render, remove, replace } from '../framework/render.js';
 import { isEscapeKey } from '../utils/common.js';
+import { UserAction, UpdateType } from '../const.js';
 
 export default class FilmCardPresenter {
   #container;
@@ -81,6 +82,7 @@ export default class FilmCardPresenter {
     }
   };
 
+  /** Перерисовка попапа */
   #updateDetailsComponent = () => {
     if (this.#isOpenDetail) {
       this.#hideDetailsComponent();
@@ -90,19 +92,29 @@ export default class FilmCardPresenter {
 
   #handleWatchlistClick = () => {
     this.#movie.userDetails.watchList = !this.#movie.userDetails.watchList;
-    this.#changeData(this.#movie);
-    this.#updateDetailsComponent();
+    this.#changeData(
+      UserAction.UPDATE_MOVIE,
+      UpdateType.MINOR,
+      this.#movie
+    );
   };
 
   #handleWatchedClick = () => {
     this.#movie.userDetails.alreadyWatched = !this.#movie.userDetails.alreadyWatched;
-    this.#changeData(this.#movie);
-    this.#updateDetailsComponent();
+    this.#changeData(
+      UserAction.UPDATE_MOVIE,
+      UpdateType.MINOR,
+      this.#movie
+    );
   };
 
   #handleFavoriteClick = () => {
     this.#movie.userDetails.favorite = !this.#movie.userDetails.favorite;
-    this.#changeData(this.#movie);
-    this.#updateDetailsComponent();
+    this.#changeData(
+      UserAction.UPDATE_MOVIE,
+      UpdateType.MINOR,
+      this.#movie
+    );
   };
+
 }

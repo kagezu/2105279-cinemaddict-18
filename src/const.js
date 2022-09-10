@@ -1,24 +1,34 @@
-const FilterType = {
+export const ESCAPE_KEY_NAME = 'Escape';
+
+export const FilterType = {
   ALL: 'all',
   WATCHLIST: 'watchlist',
   HISTORY: 'history',
   FAVORITES: 'favorites'
 };
 
-const SortType = {
+export const SortType = {
   DEFAULT: 'default',
   DATE: 'date',
   RATING: 'rating'
 
 };
 
-const filterTypeToText = {
+export const filterTypeToText = {
   [FilterType.ALL]: 'All movies',
   [FilterType.WATCHLIST]: 'Watchlist',
   [FilterType.HISTORY]: 'History',
   [FilterType.FAVORITES]: 'Favorites'
 };
 
-const ESCAPE_KEY_NAME = 'Escape';
+export const UserAction = {
+  UPDATE_MOVIE: 'UPDATE_MOVIE',
+  ADD_COMMENT: 'ADD_COMMENT',
+  DELETE_COMMENT: 'DELETE_COMMENT',
+};
 
-export { FilterType, SortType, filterTypeToText, ESCAPE_KEY_NAME };
+export const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};

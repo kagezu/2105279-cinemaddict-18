@@ -6,7 +6,7 @@ import ShowMoreButtonView from '../view/show-more-button.js';
 import { render, remove } from '../framework/render.js';
 import FilmCardPresenter from './film-card-presenter.js';
 import { sortDate, sortRating } from '../utils/common.js';
-import { SortType } from '../const.js';
+import { SortType, UserAction, UpdateType } from '../const.js';
 
 const CARD_COUNT_PER_STEP = 5;
 
@@ -23,13 +23,15 @@ export default class FilmsPresenter {
   #currentSortType = SortType.DEFAULT;
   #movieModel;
 
-  constructor(container) {
+  constructor(container, movieModel, commentsModel) {
     this.#container = container;
-  }
-
-  init = (movieModel, commentsModel) => {
     this.#movieModel = movieModel;
     this.#commentsModel = commentsModel;
+
+    this.#movieModel.addObserver(this.#handleModelEvent);
+  }
+
+  init = () => {
     this.#renderViews();
   };
 
@@ -128,14 +130,14 @@ export default class FilmsPresenter {
   * Отрисовка карточки фильма
   */
   #renderCard = (movie) => {
-    const cardComponent = new FilmCardPresenter(this.#filmListContainer.element, this.#commentsModel, this.#handleCardChange, this.#handleResetDetail);
+    const cardComponent = new FilmCardPresenter(this.#filmListContainer.element, this.#commentsModel, this.#handleViewAction, this.#handleResetDetail);
     cardComponent.init(movie);
     this.#cardPresenter.set(movie.id, cardComponent);
   };
 
 
-  /**
-   * Обработчик сортировки карточек фильмов
+  /** Обработчик сортировки карточек фильмов
+   * @type {SortType} sortType
    */
   #handleSortTypeChange = (sortType) => {
     if (this.#currentSortType === sortType) {
@@ -146,18 +148,38 @@ export default class FilmsPresenter {
     this.#renderViews();
   };
 
-  /**
-   * Обработчик обновления карточки фильмов
-   */
-  #handleCardChange = (updatedCard) => {
-    this.#movieModel.updateMovie(updatedCard);
-    this.#cardPresenter.get(updatedCard.id).init(updatedCard);
-  };
-
-  /**
-   * Обработчик закрывающий все попапы
-   */
+  /**Обработчик закрывающий все попапы*/
   #handleResetDetail = () => {
     this.#cardPresenter.forEach((presenter) => presenter.resetDetailsView());
   };
+
+  /**Обработчик обновления модели*/
+  #handleViewAction = (actionType, updateType, update) => {
+    switch (actionType) {
+      case UserAction.UPDATE_MOVIE:
+        this.#movieModel.updateMovie(updateType, update);
+        break;
+      case UserAction.ADD_COMMENT:
+        this.#commentsModel.addComment(updateType, update);
+        break;
+      case UserAction.DELETE_COMMENT:
+        this.#commentsModel.deleteComment(updateType, update);
+        break;
+    }
+  };
+
+  /**Обработчик события модели*/
+  #handleModelEvent = (updateType, data) => {
+    switch (updateType) {
+      case UpdateType.PATCH:
+        this.#cardPresenter.get(data.id).init(data);
+        break;
+      case UpdateType.MINOR:
+        break;
+      case UpdateType.MAJOR:
+        break;
+    }
+    this.#movieModel.updateMovie(data);
+  };
+
 }
