@@ -7,4 +7,13 @@ export default class CommentsModel extends Observable {
   get comments() {
     return this.#comments;
   }
+
+  set comments(comments) {
+    this.#comments = comments;
+  }
+
+  addComment = (comment) => {
+    this.#comments.push(comment);
+  };
+
 }
