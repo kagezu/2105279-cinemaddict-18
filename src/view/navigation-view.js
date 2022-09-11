@@ -9,7 +9,7 @@ ${text}
 
 const createNavigationTemplate = (filters, currentFilterType) => {
   const filterItemsTemplate = filters
-    .map((filter) => createFilterItemTemplate(filter, filter.type === currentFilterType))
+    .map((filter) => createFilterItemTemplate(filter, filter.name === currentFilterType))
     .join('');
   return `<nav class="main-navigation">
   ${filterItemsTemplate}
@@ -38,12 +38,13 @@ export default class NavigationView extends AbstractView {
 
   /**Обработчик выбора фильтра*/
   #filterTypeChangeHandler = (evt) => {
+    if (evt.target.tagName !== 'A') {
+      return;
+    }
     evt.preventDefault();
-    if (evt.target.tagName === 'A') {
-      const filterType = evt.target.dataset.filterType;
-      if (filterType !== this.#currentFilterType) {
-        this._callback.filterTypeChange(filterType);
-      }
+    const filterType = evt.target.dataset.filterType;
+    if (filterType !== this.#currentFilterType) {
+      this._callback.filterTypeChange(filterType);
     }
   };
 }

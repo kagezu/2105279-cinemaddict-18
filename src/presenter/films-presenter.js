@@ -7,6 +7,7 @@ import { render, remove } from '../framework/render.js';
 import FilmCardPresenter from './film-card-presenter.js';
 import { sortDate, sortRating } from '../utils/common.js';
 import { SortType, UserAction, UpdateType } from '../const.js';
+import { filter } from '../utils/filter.js';
 
 const CARD_COUNT_PER_STEP = 5;
 
@@ -22,13 +23,16 @@ export default class FilmsPresenter {
   #cardPresenter = new Map();
   #currentSortType = SortType.DEFAULT;
   #movieModel;
+  #filterModel;
 
-  constructor(container, movieModel, commentsModel) {
+  constructor(container, movieModel, commentsModel, filterModel) {
     this.#container = container;
     this.#movieModel = movieModel;
     this.#commentsModel = commentsModel;
+    this.#filterModel = filterModel;
 
     this.#movieModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   init = () => {
@@ -36,13 +40,17 @@ export default class FilmsPresenter {
   };
 
   get movies() {
+    const filterType = this.#filterModel.filter;
+    const movies = this.#movieModel.movies;
+    const filteredMovies = filter[filterType](movies);
+
     switch (this.#currentSortType) {
       case SortType.DATE:
-        return [...this.#movieModel.movies].sort(sortDate);
+        return [...filteredMovies].sort(sortDate);
       case SortType.RATING:
-        return [...this.#movieModel.movies].sort(sortRating);
+        return [...filteredMovies].sort(sortRating);
     }
-    return this.#movieModel.movies;
+    return filteredMovies;
   }
 
   get comments() {
@@ -85,10 +93,11 @@ export default class FilmsPresenter {
 
   /**Дорисовка карточек фильмов*/
   #handleLoadMoreCardClick = () => {
-    const lastComponent = Math.min(this.#renderedCardCount + CARD_COUNT_PER_STEP, this.movies.length);
+    const moviesLength = this.movies.length;
+    const lastComponent = Math.min(this.#renderedCardCount + CARD_COUNT_PER_STEP, moviesLength);
     this.#renderCardList(this.#renderedCardCount, lastComponent);
     this.#renderedCardCount = lastComponent;
-    if (this.#renderedCardCount === this.movies.length) {
+    if (this.#renderedCardCount === moviesLength) {
       remove(this.#showMoreButton);
     }
   };
@@ -101,7 +110,7 @@ export default class FilmsPresenter {
   };
 
   /**Очистка всех шаблонов*/
-  #clearViews = () => {
+  #clearViews = (sortType = null) => {
     this.#cardPresenter.forEach((presenter) => presenter.destroy());
     this.#cardPresenter.clear();
     this.#renderedCardCount = 0;
@@ -110,11 +119,18 @@ export default class FilmsPresenter {
     remove(this.#filmList);
     remove(this.#filmsContainer);
     remove(this.#sortComponent);
+    this.#currentSortType = sortType ? sortType : this.#currentSortType;
   };
 
   /**Отрисовка карточки фильма*/
   #renderCard = (movie) => {
-    const cardComponent = new FilmCardPresenter(this.#filmListContainer.element, this.#commentsModel, this.#handleViewAction, this.#handleResetDetail);
+    const cardComponent = new FilmCardPresenter(
+      this.#filmListContainer.element,
+      this.#commentsModel,
+      this.#handleViewAction,
+      this.#handleResetDetail,
+      this.#filterModel
+    );
     cardComponent.init(movie);
     this.#cardPresenter.set(movie.id, cardComponent);
   };
@@ -127,8 +143,7 @@ export default class FilmsPresenter {
     if (this.#currentSortType === sortType) {
       return;
     }
-    this.#currentSortType = sortType;
-    this.#clearViews();
+    this.#clearViews(sortType);
     this.#renderViews();
   };
 
@@ -163,11 +178,10 @@ export default class FilmsPresenter {
         this.#renderViews();
         break;
       case UpdateType.MAJOR:
-        this.#clearViews();
+        this.#clearViews(SortType.DEFAULT);
         this.#renderViews();
         break;
     }
-    this.#movieModel.updateMovie(data);
   };
 
 }

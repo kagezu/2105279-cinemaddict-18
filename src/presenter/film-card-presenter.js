@@ -2,23 +2,25 @@ import FilmCardView from '../view/film-card-view.js';
 import FilmDetailsView from '../view/film-details-view.js';
 import { render, remove, replace } from '../framework/render.js';
 import { isEscapeKey } from '../utils/common.js';
-import { UserAction, UpdateType } from '../const.js';
+import { UserAction, UpdateType, FilterType } from '../const.js';
 
 export default class FilmCardPresenter {
   #container;
   #movie;
   #commentsModel;
+  #filterModel;
   #detailsComponent = null;
   #cardComponent = null;
   #changeData = null;
   #isOpenDetail = false;
   #resetView = null;
 
-  constructor(container, commentsModel, changeData, resetView) {
+  constructor(container, commentsModel, changeData, resetView, filterModel) {
     this.#container = container;
     this.#commentsModel = commentsModel;
     this.#changeData = changeData;
     this.#resetView = resetView;
+    this.#filterModel = filterModel;
   }
 
   init = (movie) => {
@@ -90,34 +92,36 @@ export default class FilmCardPresenter {
     }
   };
 
+  #getUpdateType = (isChecked, isFiltered) => !isChecked && isFiltered ? UpdateType.MINOR : UpdateType.PATCH;
+
   #handleWatchlistClick = () => {
-    this.#movie.userDetails.watchList = !this.#movie.userDetails.watchList;
+    const newValue = !this.#movie.userDetails.watchList;
+    this.#movie.userDetails.watchList = newValue;
     this.#changeData(
       UserAction.UPDATE_MOVIE,
-      UpdateType.PATCH,
+      this.#getUpdateType(newValue, this.#filterModel.filter === FilterType.WATCHLIST),
       this.#movie
     );
-    // this.#updateDetailsComponent();
   };
 
   #handleWatchedClick = () => {
-    this.#movie.userDetails.alreadyWatched = !this.#movie.userDetails.alreadyWatched;
+    const newValue = !this.#movie.userDetails.alreadyWatched;
+    this.#movie.userDetails.alreadyWatched = newValue;
     this.#changeData(
       UserAction.UPDATE_MOVIE,
       UpdateType.PATCH,
       this.#movie
     );
-    // this.#updateDetailsComponent();
   };
 
   #handleFavoriteClick = () => {
-    this.#movie.userDetails.favorite = !this.#movie.userDetails.favorite;
+    const newValue = !this.#movie.userDetails.favorite;
+    this.#movie.userDetails.favorite = newValue;
     this.#changeData(
       UserAction.UPDATE_MOVIE,
-      UpdateType.PATCH,
+      this.#getUpdateType(newValue, this.#filterModel.filter === FilterType.FAVORITES),
       this.#movie
     );
-    // this.#updateDetailsComponent();
   };
 
 }

@@ -20,7 +20,7 @@ export default class NavigationPresenter {
   }
 
   get filters() {
-    const movies = this.this.#movieModel.movies;
+    const movies = this.#movieModel.movies;
 
     return Object.entries(filter)
       .map(
