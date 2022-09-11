@@ -36,6 +36,7 @@ export default class FilmCardPresenter {
 
     if (this.#container.contains(prevCardComponent?.element)) {
       replace(this.#cardComponent, prevCardComponent);
+      this.#updateDetailsComponent();
     }
   };
 
@@ -85,8 +86,7 @@ export default class FilmCardPresenter {
   /** Перерисовка попапа */
   #updateDetailsComponent = () => {
     if (this.#isOpenDetail) {
-      this.#hideDetailsComponent();
-      this.#viewDetailsComponent();
+      this.#detailsComponent.updateElement(this.#movie);
     }
   };
 
@@ -94,30 +94,30 @@ export default class FilmCardPresenter {
     this.#movie.userDetails.watchList = !this.#movie.userDetails.watchList;
     this.#changeData(
       UserAction.UPDATE_MOVIE,
-      UpdateType.MINOR,
+      UpdateType.PATCH,
       this.#movie
     );
-    this.#updateDetailsComponent();
+    // this.#updateDetailsComponent();
   };
 
   #handleWatchedClick = () => {
     this.#movie.userDetails.alreadyWatched = !this.#movie.userDetails.alreadyWatched;
     this.#changeData(
       UserAction.UPDATE_MOVIE,
-      UpdateType.MINOR,
+      UpdateType.PATCH,
       this.#movie
     );
-    this.#updateDetailsComponent();
+    // this.#updateDetailsComponent();
   };
 
   #handleFavoriteClick = () => {
     this.#movie.userDetails.favorite = !this.#movie.userDetails.favorite;
     this.#changeData(
       UserAction.UPDATE_MOVIE,
-      UpdateType.MINOR,
+      UpdateType.PATCH,
       this.#movie
     );
-    this.#updateDetailsComponent();
+    // this.#updateDetailsComponent();
   };
 
 }

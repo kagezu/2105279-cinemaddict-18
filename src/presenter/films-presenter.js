@@ -141,8 +141,7 @@ export default class FilmsPresenter {
   #handleViewAction = (actionType, updateType, update) => {
     switch (actionType) {
       case UserAction.UPDATE_MOVIE:
-        // this.#movieModel.updateMovie(updateType, update);
-        this.#cardPresenter.get(update.id).init(update);
+        this.#movieModel.updateMovie(updateType, update);
         break;
       case UserAction.ADD_COMMENT:
         this.#commentsModel.addComment(updateType, update);
@@ -157,9 +156,9 @@ export default class FilmsPresenter {
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
       case UpdateType.PATCH:
+        this.#cardPresenter.get(data.id).init(data);
         break;
       case UpdateType.MINOR:
-        this.#cardPresenter.get(data.id).init(data);
         this.#clearViews();
         this.#renderViews();
         break;
