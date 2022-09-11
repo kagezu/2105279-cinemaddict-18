@@ -1,10 +1,11 @@
-import ProfileView from './view/profile-view.js';
 import FilmsPresenter from './presenter/films-presenter.js';
+import NavigationPresenter from './presenter/navigation-presenter.js';
 import { render } from './framework/render.js';
 import MovieModel from './model/movie-model.js';
 import CommentsModel from './model/comments-model.js';
-import NavigationView from './view/navigation-view.js';
 import FilterModel from './model/filter-model.js';
+import NavigationView from './view/navigation-view.js';
+import ProfileView from './view/profile-view.js';
 
 const filters = [
   {
