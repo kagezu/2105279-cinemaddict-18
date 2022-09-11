@@ -4,19 +4,26 @@ import { render } from './framework/render.js';
 import MovieModel from './model/movie-model.js';
 import CommentsModel from './model/comments-model.js';
 import NavigationView from './view/navigation-view.js';
-import { generateFilter } from './mock/filter.js';
+import FilterModel from './model/filter-model.js';
+
+const filters = [
+  {
+    type: 'all',
+    text: 'All movies',
+    count: 0,
+  },
+];
 
 const siteMainElement = document.querySelector('.main');
 const siteHeaderElement = document.querySelector('.header');
 
 const movieModel = new MovieModel();
 const commentsModel = new CommentsModel();
+const filterModel = new FilterModel();
 
 render(new ProfileView(), siteHeaderElement);
 
-const filters = generateFilter(movieModel.movies);
-
-render(new NavigationView(filters), siteMainElement);
+render(new NavigationView(filters, 'all'), siteMainElement);
 
 
 const filmsPresenter = new FilmsPresenter(siteMainElement, movieModel, commentsModel);
