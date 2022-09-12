@@ -159,10 +159,12 @@ export default class FilmsPresenter {
         this.#movieModel.updateMovie(updateType, update);
         break;
       case UserAction.ADD_COMMENT:
-        this.#commentsModel.addComment(updateType, update);
+        this.#commentsModel.addComment(updateType, update.comment);
+        this.#movieModel.updateMovie(updateType, update.movie);
         break;
       case UserAction.DELETE_COMMENT:
-        this.#commentsModel.deleteComment(updateType, update);
+        this.#commentsModel.deleteComment(updateType, update.id);
+        this.#movieModel.updateMovie(updateType, update.movie);
         break;
     }
   };

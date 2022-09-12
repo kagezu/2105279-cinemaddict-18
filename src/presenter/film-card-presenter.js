@@ -74,6 +74,8 @@ export default class FilmCardPresenter {
       this.#detailsComponent.setWatchlistClickHandler(this.#handleWatchlistClick);
       this.#detailsComponent.setWatchedClickHandler(this.#handleWatchedClick);
       this.#detailsComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
+      this.#detailsComponent.setDeleteCommentHandler(this.#handleDeleteCommentClick);
+      this.#detailsComponent.setAddCommentHandler(this.#handleAddCommentClick);
       this.#detailsComponent.setCloseButtonClickHandler(() => {
         this.#hideDetailsComponent();
         window.removeEventListener('keydown', this.#onWindowKeydown);
@@ -88,9 +90,42 @@ export default class FilmCardPresenter {
   /** Перерисовка попапа */
   #updateDetailsComponent = () => {
     if (this.#isOpenDetail) {
-      this.#detailsComponent.updateElement(this.#movie);
+      this.#detailsComponent.updateElement({
+        movie: this.#movie,
+        listComments: this.#commentsModel.comments,
+        emotion: null,
+        message: null
+      });
     }
   };
+
+  // Добавление коментария
+
+  #handleAddCommentClick = (comment) => {
+    this.#movie.comments.push(comment.id);
+    const movie = this.#movie;
+    this.#changeData(
+      UserAction.ADD_COMMENT,
+      UpdateType.PATCH,
+      { comment, movie }
+    );
+  };
+
+  // удаление коментария
+
+  #handleDeleteCommentClick = (id) => {
+
+    const index = this.#movie.comments.findIndex((commentId) => id === commentId);
+    this.#movie.comments.splice(index, 1);
+    const movie = this.#movie;
+    this.#changeData(
+      UserAction.DELETE_COMMENT,
+      UpdateType.PATCH,
+      { id, movie }
+    );
+  };
+
+  //Изменение и обновление опций
 
   #getUpdateType = (isChecked, isFiltered) => !isChecked && isFiltered ? UpdateType.MINOR : UpdateType.PATCH;
 
