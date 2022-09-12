@@ -2,6 +2,7 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { formatStringToDate, formatStringToDateWithTime, formatMinutesToTime } from '../utils/date.js';
 import { emotions } from '../mock/comments.js';
 import { getRandomInt } from '../utils/random.js';
+import he from 'he';
 
 const createPoster = (poster) => `<img class="film-details__poster-img" src="${poster}" alt="">`;
 const createAgeRating = (age) => age ? `<p class="film-details__age">${age}+</p>` : '';
@@ -64,9 +65,9 @@ const createComment = (message) => message ?
        ${createSmile(message.emotion)}
     </span>
     <div>
-      <p class="film-details__comment-text">${message.comment}</p>
+      <p class="film-details__comment-text">${he.encode(message.comment)}</p>
       <p class="film-details__comment-info">
-        <span class="film-details__comment-author">${message.author}</span>
+        <span class="film-details__comment-author">${he.encode(message.author)}</span>
         <span class="film-details__comment-day">${formatStringToDateWithTime(message.date)}</span>
         <button class="film-details__comment-delete"
         data-id ="${message.id}">Delete</button>
@@ -99,7 +100,7 @@ const createEmojiButtons = (current) => {
 };
 const createTextarea = (message) => `
   <label class="film-details__comment-label">
-    <textarea class="film-details__comment-input" name="comment" placeholder="Select reaction below and write comment here">${message ? message : ''}</textarea>
+    <textarea class="film-details__comment-input" name="comment" placeholder="Select reaction below and write comment here">${message ? he.encode(message) : ''}</textarea>
   </label>`;
 
 const createFilmDetailsTemplate = ({ movie, listComments, emotion, message }) => {
