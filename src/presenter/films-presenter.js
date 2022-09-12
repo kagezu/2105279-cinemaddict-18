@@ -68,7 +68,7 @@ export default class FilmsPresenter {
   /**Отрисовка контейнера для карточек*/
   #renderFilmContainer = () => {
     this.#filmsContainer = new FilmsView();
-    this.#filmList = new FilmListView(!this.movies.length);
+    this.#filmList = new FilmListView(this.#filterModel.filter, !this.movies.length);
     this.#filmListContainer = new FilmListContainerView();
 
     render(this.#filmsContainer, this.#container);
