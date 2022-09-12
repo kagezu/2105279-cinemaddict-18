@@ -65,9 +65,9 @@ const createComment = (message) => message ?
        ${createSmile(message.emotion)}
     </span>
     <div>
-      <p class="film-details__comment-text">${he.encode(message.comment)}</p>
+      <p class="film-details__comment-text">${message.comment ? he.encode(message.comment) : ''}</p>
       <p class="film-details__comment-info">
-        <span class="film-details__comment-author">${he.encode(message.author)}</span>
+        <span class="film-details__comment-author">${message.author}</span>
         <span class="film-details__comment-day">${formatStringToDateWithTime(message.date)}</span>
         <button class="film-details__comment-delete"
         data-id ="${message.id}">Delete</button>
@@ -205,7 +205,7 @@ export default class FilmDetailsView extends AbstractStatefulView {
     this.element.querySelector('.film-details__emoji-list').addEventListener('click', this.#emotionClickHandler);
     this.element.querySelector('.film-details__comment-input').addEventListener('input', this.#messageInputHandler);
     this.element.querySelector('.film-details__comments-list').addEventListener('click', this.#deleteCommentHandler);
-    this.element.querySelector('.film-details__add-emoji-label').addEventListener('click', this.#addCommentHandler);
+    this.element.addEventListener('keydown', this.#addCommentHandler);
 
     this.element.scrollTop = this._state.scroll;
     this.element.addEventListener('scroll', this.#positionScrollHandler);
@@ -217,6 +217,10 @@ export default class FilmDetailsView extends AbstractStatefulView {
   };
 
   #addCommentHandler = (evt) => {
+    if (!evt.ctrlKey || evt.key !== 'Enter') {
+      return;
+    }
+
     evt.preventDefault();
     const message = this._state.message;
     const emotion = this._state.emotion;
