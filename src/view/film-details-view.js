@@ -1,6 +1,8 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { formatStringToDate, formatStringToDateWithTime, formatMinutesToTime } from '../utils/date.js';
 import { emotions } from '../mock/comments.js';
+import { getRandomInt } from '../utils/random.js';
+import he from 'he';
 
 const createPoster = (poster) => `<img class="film-details__poster-img" src="${poster}" alt="">`;
 const createAgeRating = (age) => age ? `<p class="film-details__age">${age}+</p>` : '';
@@ -57,25 +59,21 @@ const createButton = (id, text, activated) => {
 };
 const createCountComments = (count) => `<h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${count ? count : 0}</span></h3>`;
 const createSmile = (emotion) => emotion ? `<img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-smile">` : '';
-const createComment = (message) => {
-  if (!message) {
-    return;
-  }
-  const { author, comment, date, emotion } = message;
-  return ` <li class="film-details__comment">
-            <span class="film-details__comment-emoji">
-              ${createSmile(emotion)}
-            </span>
-            <div>
-              <p class="film-details__comment-text">${comment}</p>
-              <p class="film-details__comment-info">
-                <span class="film-details__comment-author">${author}</span>
-                <span class="film-details__comment-day">${formatStringToDateWithTime(date)}</span>
-                <button class="film-details__comment-delete">Delete</button>
-              </p>
-            </div>
-          </li>`;
-};
+const createComment = (message) => message ?
+  `<li class="film-details__comment">
+    <span class="film-details__comment-emoji">
+       ${createSmile(message.emotion)}
+    </span>
+    <div>
+      <p class="film-details__comment-text">${message.comment ? he.encode(message.comment) : ''}</p>
+      <p class="film-details__comment-info">
+        <span class="film-details__comment-author">${message.author}</span>
+        <span class="film-details__comment-day">${formatStringToDateWithTime(message.date)}</span>
+        <button class="film-details__comment-delete"
+        data-id ="${message.id}">Delete</button>
+      </p>
+    </div>
+  </li>` : '';
 const createComments = (comments, listComments) => {
   const template = comments.length ? comments.map(
     (index) => createComment(listComments.find(
@@ -102,7 +100,7 @@ const createEmojiButtons = (current) => {
 };
 const createTextarea = (message) => `
   <label class="film-details__comment-label">
-    <textarea class="film-details__comment-input" name="comment" placeholder="Select reaction below and write comment here">${message ? message : ''}</textarea>
+    <textarea class="film-details__comment-input" name="comment" placeholder="Select reaction below and write comment here">${message ? he.encode(message) : ''}</textarea>
   </label>`;
 
 const createFilmDetailsTemplate = ({ movie, listComments, emotion, message }) => {
@@ -192,7 +190,7 @@ export default class FilmDetailsView extends AbstractStatefulView {
     message: null
   });
 
-  static parseStateToTask = (state) => ({
+  static parseStateToMove = (state) => ({
     'movie': state.movie,
     'comments': state.comments
   });
@@ -206,16 +204,56 @@ export default class FilmDetailsView extends AbstractStatefulView {
     this.element.querySelector('.film-details__control-button--favorite').addEventListener('click', this.#favoriteClickHandler);
     this.element.querySelector('.film-details__emoji-list').addEventListener('click', this.#emotionClickHandler);
     this.element.querySelector('.film-details__comment-input').addEventListener('input', this.#messageInputHandler);
+    this.element.querySelector('.film-details__comments-list').addEventListener('click', this.#deleteCommentHandler);
+    this.element.addEventListener('keydown', this.#addCommentHandler);
 
     this.element.scrollTop = this._state.scroll;
     this.element.addEventListener('scroll', this.#positionScrollHandler);
+  };
+
+  // Добавление комментария
+  setAddCommentHandler = (callback) => {
+    this._callback.addComment = callback;
+  };
+
+  #addCommentHandler = (evt) => {
+    if (!evt.ctrlKey || evt.key !== 'Enter') {
+      return;
+    }
+
+    evt.preventDefault();
+    const message = this._state.message;
+    const emotion = this._state.emotion;
+
+    // Создание нового комментария
+    const comment = {
+      'id': getRandomInt(99, 99999999),
+      'author': 'Movie Buff',
+      'comment': message,
+      'date': new Date,
+      emotion
+    };
+    this._callback.addComment(comment);
+  };
+
+
+  // Удаление комментария
+  setDeleteCommentHandler = (callback) => {
+    this._callback.deleteComment = callback;
+  };
+
+  #deleteCommentHandler = (evt) => {
+    if (evt.target.tagName !== 'BUTTON') {
+      return;
+    }
+    evt.preventDefault();
+    this._callback.deleteComment(Number(evt.target.dataset.id));
   };
 
   // Закрытие попапа
 
   setCloseButtonClickHandler = (callback) => {
     this._callback.click = callback;
-    this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#closeButtonClickHandler);
   };
 
   #closeButtonClickHandler = (evt) => {
@@ -227,7 +265,6 @@ export default class FilmDetailsView extends AbstractStatefulView {
 
   setWatchlistClickHandler = (callback) => {
     this._callback.watchlistClick = callback;
-    this.element.querySelector('.film-details__control-button--watchlist').addEventListener('click', this.#watchlistClickHandler);
   };
 
   #watchlistClickHandler = (evt) => {
@@ -239,7 +276,6 @@ export default class FilmDetailsView extends AbstractStatefulView {
 
   setWatchedClickHandler = (callback) => {
     this._callback.watchedClick = callback;
-    this.element.querySelector('.film-details__control-button--watched').addEventListener('click', this.#watchedClickHandler);
   };
 
   #watchedClickHandler = (evt) => {
@@ -251,7 +287,6 @@ export default class FilmDetailsView extends AbstractStatefulView {
 
   setFavoriteClickHandler = (callback) => {
     this._callback.favoriteClick = callback;
-    this.element.querySelector('.film-details__control-button--favorite').addEventListener('click', this.#favoriteClickHandler);
   };
 
   #favoriteClickHandler = (evt) => {

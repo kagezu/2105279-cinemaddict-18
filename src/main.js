@@ -1,23 +1,22 @@
-import ProfileView from './view/profile-view.js';
 import FilmsPresenter from './presenter/films-presenter.js';
+import NavigationPresenter from './presenter/navigation-presenter.js';
 import { render } from './framework/render.js';
 import MovieModel from './model/movie-model.js';
 import CommentsModel from './model/comments-model.js';
-import NavigationView from './view/navigation-view.js';
-import { generateFilter } from './mock/filter.js';
+import FilterModel from './model/filter-model.js';
+import ProfileView from './view/profile-view.js';
 
 const siteMainElement = document.querySelector('.main');
 const siteHeaderElement = document.querySelector('.header');
 
 const movieModel = new MovieModel();
 const commentsModel = new CommentsModel();
+const filterModel = new FilterModel();
 
 render(new ProfileView(), siteHeaderElement);
 
-const filters = generateFilter(movieModel.get());
+const navigationPresenter = new NavigationPresenter(siteMainElement, filterModel, movieModel);
+const filmsPresenter = new FilmsPresenter(siteMainElement, movieModel, commentsModel, filterModel);
 
-render(new NavigationView(filters), siteMainElement);
-
-
-const filmsPresenter = new FilmsPresenter();
-filmsPresenter.init(siteMainElement, movieModel.get(), commentsModel.get());
+navigationPresenter.init();
+filmsPresenter.init();
