@@ -58,6 +58,6 @@ export default class NavigationPresenter {
       return;
     }
 
-    this.#filterModel.setFilter(UpdateType.MAJOR, filterType);
+    this.#filterModel.setFilter(UpdateType.GLOBAL, filterType);
   };
 }

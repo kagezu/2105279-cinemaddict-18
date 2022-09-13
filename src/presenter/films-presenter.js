@@ -5,6 +5,7 @@ import FilmListContainerView from '../view/film-list-container.js';
 import ShowMoreButtonView from '../view/show-more-button.js';
 import { render, remove } from '../framework/render.js';
 import FilmCardPresenter from './film-card-presenter.js';
+import FilmDetailsPresenter from './film-details-presenter.js';
 import { sortDate, sortRating } from '../utils/common.js';
 import { SortType, UserAction, UpdateType } from '../const.js';
 import { filter } from '../utils/filter.js';
@@ -12,16 +13,17 @@ import { filter } from '../utils/filter.js';
 const CARD_COUNT_PER_STEP = 5;
 
 export default class FilmsPresenter {
+  #container;
   #filmsContainer;
   #filmListContainer;
   #showMoreButton = null;
   #sortComponent = null;
   #filmList;
-  #container;
-  #commentsModel;
   #renderedCardCount;
+  #filmDetailsPresenter;
   #cardPresenter = new Map();
   #currentSortType = SortType.DEFAULT;
+  #commentsModel;
   #movieModel;
   #filterModel;
 
@@ -33,6 +35,8 @@ export default class FilmsPresenter {
 
     this.#movieModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
+
+    this.#filmDetailsPresenter = new FilmDetailsPresenter(document.body, movieModel, commentsModel);
   }
 
   init = () => {
@@ -126,14 +130,12 @@ export default class FilmsPresenter {
   #renderCard = (movie) => {
     const cardComponent = new FilmCardPresenter(
       this.#filmListContainer.element,
-      this.#commentsModel,
       this.#handleViewAction,
-      this.#filterModel
+      this.#filmDetailsPresenter.init
     );
     cardComponent.init(movie);
     this.#cardPresenter.set(movie.id, cardComponent);
   };
-
 
   /** Обработчик сортировки карточек фильмов
    * @type {SortType} sortType
@@ -168,7 +170,7 @@ export default class FilmsPresenter {
     switch (updateType) {
       case UpdateType.PATCH: {
         this.#cardPresenter.get(data.id)?.init(data);
-        FilmCardPresenter.updateOpenDetails(data);
+        this.#filmDetailsPresenter.init(data);
       }
         break;
       case UpdateType.MINOR:
@@ -176,6 +178,10 @@ export default class FilmsPresenter {
         this.#renderViews();
         break;
       case UpdateType.MAJOR:
+        this.#clearViews();
+        this.#renderViews();
+        break;
+      case UpdateType.GLOBAL:
         this.#clearViews(SortType.DEFAULT);
         this.#renderViews();
         break;
