@@ -4,6 +4,9 @@ import { render, remove, replace } from '../framework/render.js';
 import { isEscapeKey } from '../utils/common.js';
 import { UserAction, UpdateType, FilterType } from '../const.js';
 
+// Ссылка на презентер открытого попапа
+let openDetailsPresenter = null;
+
 export default class FilmCardPresenter {
   #container;
   #movie;
@@ -13,13 +16,11 @@ export default class FilmCardPresenter {
   #cardComponent = null;
   #changeData = null;
   #isOpenDetail = false;
-  #resetView = null;
 
-  constructor(container, commentsModel, changeData, resetView, filterModel) {
+  constructor(container, commentsModel, changeData, filterModel) {
     this.#container = container;
     this.#commentsModel = commentsModel;
     this.#changeData = changeData;
-    this.#resetView = resetView;
     this.#filterModel = filterModel;
   }
 
@@ -42,20 +43,20 @@ export default class FilmCardPresenter {
     }
   };
 
-  destroy = () => {
-    remove(this.#cardComponent);
-  };
+  destroy = () => remove(this.#cardComponent);
 
-  resetDetailsView = () => {
-    if (this.#isOpenDetail) {
-      this.#hideDetailsComponent();
-    }
+  static updateOpenDetails = (movie) => openDetailsPresenter?._updateDetails(movie);
+
+  _updateDetails = (movie) => {
+    this.#movie = movie;
+    this.#updateDetailsComponent();
   };
 
   #hideDetailsComponent = () => {
     remove(this.#detailsComponent);
     document.body.classList.remove('hide-overflow');
     this.#isOpenDetail = false;
+    openDetailsPresenter = null;
   };
 
   #onWindowKeydown = (evt) => {
@@ -68,8 +69,9 @@ export default class FilmCardPresenter {
 
   #viewDetailsComponent = () => {
     if (!this.#isOpenDetail) {
-      remove(FilmDetailsView.getOpenPopup());
-      this.#resetView();
+      if (openDetailsPresenter) {
+        remove(FilmDetailsView.getOpenPopup());
+      }
       this.#detailsComponent = new FilmDetailsView(this.#movie, this.#commentsModel.comments);
       this.#detailsComponent.setWatchlistClickHandler(this.#handleWatchlistClick);
       this.#detailsComponent.setWatchedClickHandler(this.#handleWatchedClick);
@@ -84,6 +86,9 @@ export default class FilmCardPresenter {
       render(this.#detailsComponent, document.body);
       window.addEventListener('keydown', this.#onWindowKeydown);
       this.#isOpenDetail = true;
+
+      // Сохраняем презентер до тех пор пока не будет закрыт попап
+      openDetailsPresenter = this;
     }
   };
 

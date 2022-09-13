@@ -128,7 +128,6 @@ export default class FilmsPresenter {
       this.#filmListContainer.element,
       this.#commentsModel,
       this.#handleViewAction,
-      this.#handleResetDetail,
       this.#filterModel
     );
     cardComponent.init(movie);
@@ -145,11 +144,6 @@ export default class FilmsPresenter {
     }
     this.#clearViews(sortType);
     this.#renderViews();
-  };
-
-  /**Обработчик закрывающий все попапы*/
-  #handleResetDetail = () => {
-    this.#cardPresenter.forEach((presenter) => presenter.resetDetailsView());
   };
 
   /**Обработчик обновления модели*/
@@ -172,8 +166,10 @@ export default class FilmsPresenter {
   /**Обработчик события модели*/
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
-      case UpdateType.PATCH:
-        this.#cardPresenter.get(data.id).init(data);
+      case UpdateType.PATCH: {
+        this.#cardPresenter.get(data.id)?.init(data);
+        FilmCardPresenter.updateOpenDetails(data);
+      }
         break;
       case UpdateType.MINOR:
         this.#clearViews();
