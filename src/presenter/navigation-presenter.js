@@ -1,7 +1,8 @@
 import { render, replace, remove } from '../framework/render.js';
 import NavigationView from '../view/navigation-view.js';
 import { filter } from '../utils/filter.js';
-import { UpdateType, filterTypeToText } from '../const.js';
+import { transformFirstCharToUpperCase } from '../utils/common.js';
+import { UpdateType } from '../const.js';
 
 export default class NavigationPresenter {
   #filterContainer = null;
@@ -26,7 +27,7 @@ export default class NavigationPresenter {
       .map(
         ([name, filterMovies]) => ({
           name,
-          text: filterTypeToText[name],
+          text: transformFirstCharToUpperCase(name),
           count: filterMovies(movies).length,
         })
       );

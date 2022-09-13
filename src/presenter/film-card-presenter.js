@@ -144,7 +144,7 @@ export default class FilmCardPresenter {
     this.#movie.userDetails.alreadyWatched = newValue;
     this.#changeData(
       UserAction.UPDATE_MOVIE,
-      UpdateType.PATCH,
+      this.#getUpdateType(newValue, this.#filterModel.filter === FilterType.HISTORY),
       this.#movie
     );
   };

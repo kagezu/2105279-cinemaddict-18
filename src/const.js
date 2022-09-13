@@ -1,7 +1,7 @@
 export const ESCAPE_KEY_NAME = 'Escape';
 
 export const FilterType = {
-  ALL: 'all',
+  ALL: 'all movies',
   WATCHLIST: 'watchlist',
   HISTORY: 'history',
   FAVORITES: 'favorites'
@@ -12,13 +12,6 @@ export const SortType = {
   DATE: 'date',
   RATING: 'rating'
 
-};
-
-export const filterTypeToText = {
-  [FilterType.ALL]: 'All movies',
-  [FilterType.WATCHLIST]: 'Watchlist',
-  [FilterType.HISTORY]: 'History',
-  [FilterType.FAVORITES]: 'Favorites'
 };
 
 export const UserAction = {
