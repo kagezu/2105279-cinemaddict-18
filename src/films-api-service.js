@@ -6,10 +6,19 @@ const Method = {
 };
 
 export default class FilmsApiService extends ApiService {
+
   get movies() {
     return this._load({ url: 'movies' })
       .then(ApiService.parseResponse);
   }
+
+  get comments() {
+    return this._load({ url: 'comments' })
+      .then(ApiService.parseResponse);
+  }
+
+  getComment = (id) => this._load({ url: `comments/:${id}` })
+    .then(ApiService.parseResponse);
 
   updateMovie = async (movie) => {
     const response = await this._load({
