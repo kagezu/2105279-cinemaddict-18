@@ -45,7 +45,12 @@ export default class FilmsPresenter {
   }
 
   init = () => {
-    this.#renderLoading();
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
+    this.#renderViews();
   };
 
   get movies() {
