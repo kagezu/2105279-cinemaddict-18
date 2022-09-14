@@ -11,14 +11,9 @@ export default class MovieModel extends Observable {
     this.#moviesApiService = moviesApiService;
 
     this.#moviesApiService.movies.then((movies) => {
-      console.log(movies);
-      // Есть проблема: cтруктура объекта похожа, но некоторые ключи называются иначе,
-      // а ещё на сервере используется snake_case, а у нас camelCase.
-      // Можно, конечно, переписать часть нашего клиентского приложения, но зачем?
-      // Есть вариант получше - паттерн "Адаптер"
+      this.#movies = movies.map(this.#adaptToClient);
     });
   }
-
 
   get movies() {
     return this.#movies;
@@ -42,6 +37,70 @@ export default class MovieModel extends Observable {
     ];
 
     this._notify(updateType, update);
+  };
+
+  #adaptToClient = (movie) => {
+    const {
+      id,
+      comments,
+      film_info:
+      {
+        title,
+        alternative_title: alternativeTitle,
+        total_rating: totalRating,
+        poster,
+        age_rating: ageRating,
+        director,
+        writers,
+        actors,
+        release:
+        {
+          date,
+          release_country: releaseCountry
+        },
+        runtime,
+        genre,
+        description
+      },
+      user_details:
+      {
+        watchlist,
+        already_watched: alreadyWatched,
+        watching_date: watchingDate,
+        favorite
+      }
+    } = movie;
+
+    return {
+      id,
+      comments,
+      filmInfo:
+      {
+        title,
+        alternativeTitle,
+        totalRating,
+        poster,
+        ageRating,
+        director,
+        writers,
+        actors,
+        release:
+        {
+          date,
+          releaseCountry
+        },
+        runtime,
+        genre,
+        description
+      },
+      userDetails:
+      {
+        watchlist,
+        alreadyWatched,
+        watchingDate,
+        favorite
+      }
+    };
   };
 
 }
