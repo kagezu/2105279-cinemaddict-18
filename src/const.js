@@ -25,4 +25,5 @@ export const UpdateType = {
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
   GLOBAL: 'GLOBAL',
+  INIT: 'INIT',
 };

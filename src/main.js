@@ -24,3 +24,4 @@ const filmsPresenter = new FilmsPresenter(siteMainElement, movieModel, commentsM
 
 navigationPresenter.init();
 filmsPresenter.init();
+movieModel.init();

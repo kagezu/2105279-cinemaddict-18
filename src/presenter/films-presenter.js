@@ -3,6 +3,7 @@ import FilmListView from '../view/film-list-view.js';
 import FilmsView from '../view/films-view.js';
 import FilmListContainerView from '../view/film-list-container.js';
 import ShowMoreButtonView from '../view/show-more-button.js';
+import LoadingView from '../view/loading-view.js';
 import { render, remove } from '../framework/render.js';
 import FilmCardPresenter from './film-card-presenter.js';
 import FilmDetailsPresenter from './film-details-presenter.js';
@@ -13,19 +14,23 @@ import { filter } from '../utils/filter.js';
 const CARD_COUNT_PER_STEP = 5;
 
 export default class FilmsPresenter {
+
+  #loadingComponent = new LoadingView();
   #container;
   #filmsContainer;
   #filmListContainer;
   #showMoreButton = null;
   #sortComponent = null;
   #filmList;
-  #renderedCardCount;
   #filmDetailsPresenter;
-  #cardPresenter = new Map();
-  #currentSortType = SortType.DEFAULT;
   #commentsModel;
   #movieModel;
   #filterModel;
+
+  #cardPresenter = new Map();
+  #currentSortType = SortType.DEFAULT;
+  #renderedCardCount;
+  #isLoading = true;
 
   constructor(container, movieModel, commentsModel, filterModel) {
     this.#container = container;
@@ -40,7 +45,7 @@ export default class FilmsPresenter {
   }
 
   init = () => {
-    this.#renderViews();
+    this.#renderLoading();
   };
 
   get movies() {
@@ -60,6 +65,10 @@ export default class FilmsPresenter {
   get comments() {
     return this.#commentsModel;
   }
+
+  #renderLoading = () => {
+    render(this.#loadingComponent, this.#container);
+  };
 
   /**Отрисовка всех шаблонов*/
   #renderViews = () => {
@@ -183,6 +192,11 @@ export default class FilmsPresenter {
         break;
       case UpdateType.GLOBAL:
         this.#clearViews(SortType.DEFAULT);
+        this.#renderViews();
+        break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
         this.#renderViews();
         break;
     }

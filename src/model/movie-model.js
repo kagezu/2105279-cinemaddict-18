@@ -1,19 +1,25 @@
-import { generateMovie } from '../mock/movie.js';
 import Observable from '../framework/observable.js';
+import { UpdateType } from '../const.js';
 
 export default class MovieModel extends Observable {
   #moviesApiService = null;
-
-  #movies = Array.from({ length: 22 }, generateMovie);
+  #movies = [];
 
   constructor(moviesApiService) {
     super();
     this.#moviesApiService = moviesApiService;
-
-    this.#moviesApiService.movies.then((movies) => {
-      this.#movies = movies.map(this.#adaptToClient);
-    });
   }
+
+  init = async () => {
+    try {
+      const movies = await this.#moviesApiService.movies;
+      this.#movies = movies.map(this.#adaptToClient);
+    } catch (err) {
+      this.#movies = [];
+    }
+
+    this._notify(UpdateType.INIT);
+  };
 
   get movies() {
     return this.#movies;
