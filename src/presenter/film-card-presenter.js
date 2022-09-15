@@ -44,7 +44,7 @@ export default class FilmCardPresenter {
     this.#movie.userDetails.watchList = !this.#movie.userDetails.watchList;
     this.#changeData(
       UserAction.UPDATE_MOVIE,
-      UpdateType.MAJOR,
+      UpdateType.MINOR,
       this.#movie
     );
   };
@@ -53,7 +53,7 @@ export default class FilmCardPresenter {
     this.#movie.userDetails.alreadyWatched = !this.#movie.userDetails.alreadyWatched;
     this.#changeData(
       UserAction.UPDATE_MOVIE,
-      UpdateType.MAJOR,
+      UpdateType.MINOR,
       this.#movie
     );
   };
@@ -62,7 +62,7 @@ export default class FilmCardPresenter {
     this.#movie.userDetails.favorite = !this.#movie.userDetails.favorite;
     this.#changeData(
       UserAction.UPDATE_MOVIE,
-      UpdateType.MAJOR,
+      UpdateType.MINOR,
       this.#movie
     );
   };

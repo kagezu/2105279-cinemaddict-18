@@ -9,6 +9,7 @@ export default class FilmDetailsPresenter {
   #commentsModel;
   #movie = null;
   #detailsComponent = null;
+  #isOpenDetails = false;
 
   constructor(container, movieModel, commentsModel) {
     this.#container = container;
@@ -18,15 +19,17 @@ export default class FilmDetailsPresenter {
 
   init = (movie) => {
 
-    if (this.#detailsComponent && this.#movie?.id === movie.id) {
-      this.#movie = movie;
-      this.#updateDetailsComponent();
+    if (this.#isOpenDetails && this.#movie?.id === movie.id) {
       return;
     }
 
     this.#movie = movie;
+    const comments = this.#commentsModel.getComments(this.#movie.id);
+    this.#movieModel.addObserver(this.#handleModelEvent);
+    this.#commentsModel.addObserver(this.#handleModelEvent);
+
     const prevDetailsComponent = this.#detailsComponent;
-    this.#detailsComponent = new FilmDetailsView(this.#movie, this.#commentsModel.comments);
+    this.#detailsComponent = new FilmDetailsView(this.#movie, comments);
     this.#detailsComponent.setWatchlistClickHandler(this.#handleWatchlistClick);
     this.#detailsComponent.setWatchedClickHandler(this.#handleWatchedClick);
     this.#detailsComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
@@ -41,10 +44,15 @@ export default class FilmDetailsPresenter {
 
     if (!prevDetailsComponent) {
       render(this.#detailsComponent, this.#container);
+      this.#isOpenDetails = true;
     }
 
     if (this.#container.contains(prevDetailsComponent?.element)) {
       replace(this.#detailsComponent, prevDetailsComponent);
+    }
+
+    if (this.#movie?.comments?.length !== comments?.length) {
+      this.#commentsModel.downloadComments(UpdateType.PATCH, this.#movie);
     }
 
   };
@@ -53,6 +61,7 @@ export default class FilmDetailsPresenter {
     remove(this.#detailsComponent);
     this.#container.classList.remove('hide-overflow');
     this.#detailsComponent = null;
+    this.#isOpenDetails = false;
   };
 
   #handleWindowKeydown = (evt) => {
@@ -64,12 +73,11 @@ export default class FilmDetailsPresenter {
   };
 
   /** Перерисовка попапа */
-  #updateDetailsComponent = () => {
-    this.#detailsComponent.updateElement({
+  #updateDetailsComponent = () => this.#detailsComponent.updateElement(
+    {
       movie: this.#movie,
-      listComments: this.#commentsModel.comments,
+      listComments: this.#commentsModel.getComments(this.#movie.id),
     });
-  };
 
   // Добавление коментария
 
@@ -94,20 +102,38 @@ export default class FilmDetailsPresenter {
 
   #handleWatchlistClick = () => {
     this.#movie.userDetails.watchList = !this.#movie.userDetails.watchList;
-    this.#movieModel.updateMovie(UpdateType.MAJOR, this.#movie);
-    this.#updateDetailsComponent();
+    this.#movieModel.updateMovie(UpdateType.MINOR, this.#movie);
   };
 
   #handleWatchedClick = () => {
     this.#movie.userDetails.alreadyWatched = !this.#movie.userDetails.alreadyWatched;
-    this.#movieModel.updateMovie(UpdateType.MAJOR, this.#movie);
-    this.#updateDetailsComponent();
+    this.#movieModel.updateMovie(UpdateType.MINOR, this.#movie);
   };
 
   #handleFavoriteClick = () => {
     this.#movie.userDetails.favorite = !this.#movie.userDetails.favorite;
-    this.#movieModel.updateMovie(UpdateType.MAJOR, this.#movie);
-    this.#updateDetailsComponent();
+    this.#movieModel.updateMovie(UpdateType.MINOR, this.#movie);
+  };
+
+  /**Обработчик события модели*/
+  #handleModelEvent = (updateType, data) => {
+
+    if (!this.#isOpenDetails) {
+      return;
+    }
+
+    switch (updateType) {
+
+      case UpdateType.PATCH:
+        this.#movie = data;
+        this.#updateDetailsComponent();
+        break;
+
+      case UpdateType.MINOR:
+        this.#movie = data;
+        this.#updateDetailsComponent();
+        break;
+    }
   };
 
 }

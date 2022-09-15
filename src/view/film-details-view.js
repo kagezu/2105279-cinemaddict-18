@@ -76,7 +76,7 @@ const createComment = (message) => message ?
   </li>` : '';
 const createComments = (comments, listComments) => {
   const template = comments.length ? comments.map(
-    (index) => createComment(listComments.find(
+    (index) => createComment(listComments?.find(
       ({ id }) => id === index)
     )
   )
@@ -166,16 +166,12 @@ const createFilmDetailsTemplate = ({ movie, listComments, emotion, message }) =>
 </section>`;
 };
 
-// Открытый попап
-let openDetailsComponent = null;
-
 export default class FilmDetailsView extends AbstractStatefulView {
 
   constructor(movie, comments) {
     super();
     this._state = FilmDetailsView.parseMovieToState(movie, comments);
     this._restoreHandlers();
-    openDetailsComponent = this;
   }
 
   get template() {
@@ -194,8 +190,6 @@ export default class FilmDetailsView extends AbstractStatefulView {
     'movie': state.movie,
     'comments': state.comments
   });
-
-  static getOpenPopup = () => openDetailsComponent;
 
   _restoreHandlers = () => {
     this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#closeButtonClickHandler);

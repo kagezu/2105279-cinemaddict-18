@@ -1,5 +1,4 @@
 import Observable from '../framework/observable.js';
-// import { UpdateType } from '../const.js';
 
 export default class CommentsModel extends Observable {
   #comments = [];
@@ -10,18 +9,18 @@ export default class CommentsModel extends Observable {
     this.#moviesApiService = moviesApiService;
   }
 
-  getComment = (id) => {
-    this.#moviesApiService.getComment(id)
-      .then((comment) => this.addComment(null, comment));
+  downloadComments = async (updateType, data) => {
+    const { id } = data;
+    try {
+      this.#comments[id] = await this.#moviesApiService.getMovieComments(id);
+    } catch (err) {
+      this.#comments[id] = [];
+    }
+
+    this._notify(updateType, data);
   };
 
-  get comments() {
-    return this.#comments;
-  }
-
-  set comments(comments) {
-    this.#comments = comments;
-  }
+  getComments = (id) => this.#comments[id];
 
   addComment = (updateType, update) => {
     this.#comments = [

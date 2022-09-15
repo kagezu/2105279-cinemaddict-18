@@ -184,7 +184,7 @@ export default class FilmsPresenter {
     switch (updateType) {
       case UpdateType.PATCH: {
         this.#cardPresenter.get(data.id)?.init(data);
-        this.#filmDetailsPresenter.init(data);
+        // this.#filmDetailsPresenter.init(data);
       }
         break;
       case UpdateType.MINOR:
@@ -192,10 +192,6 @@ export default class FilmsPresenter {
         this.#renderViews();
         break;
       case UpdateType.MAJOR:
-        this.#clearViews();
-        this.#renderViews();
-        break;
-      case UpdateType.GLOBAL:
         this.#clearViews(SortType.DEFAULT);
         this.#renderViews();
         break;

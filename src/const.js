@@ -21,6 +21,7 @@ export const UserAction = {
 };
 
 export const UpdateType = {
+  MICRO: 'MICRO',
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
