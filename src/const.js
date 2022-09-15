@@ -28,3 +28,5 @@ export const UpdateType = {
   GLOBAL: 'GLOBAL',
   INIT: 'INIT',
 };
+
+export const emotions = ['smile', 'sleeping', 'puke', 'angry'];

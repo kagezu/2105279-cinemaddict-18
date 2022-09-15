@@ -1,6 +1,6 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { formatStringToDate, formatStringToDateWithTime, formatMinutesToTime } from '../utils/date.js';
-import { emotions } from '../mock/comments.js';
+import { emotions } from '../const.js';
 import { getRandomInt } from '../utils/random.js';
 import he from 'he';
 
