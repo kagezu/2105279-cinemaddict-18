@@ -9,15 +9,17 @@ export default class FilmApi extends ApiService {
       .then((movies) => movies.map(this.#adaptToClient));
   }
 
-  updateMovie = async (movie) => {
+  update = async (movie) => {
     const response = await this._load({
       url: `movies/${movie.id}`,
       method: Method.PUT,
-      body: JSON.stringify(movie),
+      body: JSON.stringify(this.#adaptToServer(movie)),
       headers: new Headers({ 'Content-Type': 'application/json' }),
     });
 
-    return await ApiService.parseResponse(response);
+    const parseResponse = await ApiService.parseResponse(response);
+
+    return this.#adaptToClient(parseResponse);
   };
 
   #adaptToClient = (movie) => {

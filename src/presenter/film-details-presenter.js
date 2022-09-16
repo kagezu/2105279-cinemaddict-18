@@ -97,7 +97,7 @@ export default class FilmDetailsPresenter {
   //Изменение и обновление опций
 
   #handleWatchlistClick = () => {
-    this.#movie.userDetails.watchList = !this.#movie.userDetails.watchList;
+    this.#movie.userDetails.watchlist = !this.#movie.userDetails.watchlist;
     this.#movieModel.update(UpdateType.MINOR, this.#movie);
   };
 

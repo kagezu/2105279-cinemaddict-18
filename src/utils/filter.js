@@ -1,6 +1,6 @@
 import { FilterType } from '../const.js';
 
-const isWatchList = (movie) => movie.userDetails.watchList;
+const isWatchList = (movie) => movie.userDetails.watchlist;
 const isFavorite = (movie) => movie.userDetails.favorite;
 const isHistory = (movie) => movie.userDetails.alreadyWatched;
 

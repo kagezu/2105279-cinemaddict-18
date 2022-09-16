@@ -41,7 +41,7 @@ export default class FilmCardPresenter {
   //Изменение и обновление опций
 
   #handleWatchlistClick = () => {
-    this.#movie.userDetails.watchList = !this.#movie.userDetails.watchList;
+    this.#movie.userDetails.watchlist = !this.#movie.userDetails.watchlist;
     this.#changeData(
       UserAction.UPDATE_MOVIE,
       UpdateType.MINOR,

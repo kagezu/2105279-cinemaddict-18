@@ -106,7 +106,7 @@ const createTextarea = (message) => `
 const createFilmDetailsTemplate = ({ movie, comments: listComments, emotion, message }) => {
   const { comments, filmInfo, userDetails } = movie;
   const { title, alternativeTitle, totalRating, poster, ageRating, director, writers, actors, release, runtime, genre, description } = filmInfo;
-  const { watchList, alreadyWatched, favorite } = userDetails;
+  const { watchlist, alreadyWatched, favorite } = userDetails;
   return `<section class="film-details">
   <div class="film-details__inner">
     <div class="film-details__top-container">
@@ -143,7 +143,7 @@ const createFilmDetailsTemplate = ({ movie, comments: listComments, emotion, mes
       </div>
 
       <section class="film-details__controls">
-      ${createButton('watchlist', 'Add to watchlist', watchList)}
+      ${createButton('watchlist', 'Add to watchlist', watchlist)}
       ${createButton('watched', 'Already watched', alreadyWatched)}
       ${createButton('favorite', 'Add to favorites', favorite)}
       </section>
