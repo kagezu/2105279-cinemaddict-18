@@ -24,4 +24,14 @@ export default class CommentApi extends ApiService {
     };
   };
 
+  delete = async (id) => {
+    const response = await this._load({
+      url: `comments/${id}`,
+      method: Method.DELETE,
+      headers: new Headers({ 'Content-Type': 'application/json' }),
+    });
+
+    return response;
+  };
+
 }

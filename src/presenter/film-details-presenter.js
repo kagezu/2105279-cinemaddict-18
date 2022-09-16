@@ -69,19 +69,11 @@ export default class FilmDetailsPresenter {
   };
 
   // Добавление коментария
-
-  #handleAddComment = (comment) => {
-    this.#commentsModel.add(UpdateType.MINOR, { comment, id: this.#movie.id });
-  };
+  #handleAddComment = (comment) => this.#commentsModel.add(UpdateType.MINOR, { comment, id: this.#movie.id });
 
   // удаление коментария
+  #handleDeleteComment = (id) => this.#commentsModel.delete(UpdateType.MINOR, { id, movie: this.#movie });
 
-  #handleDeleteComment = (id) => {
-    const index = this.#movie.comments.findIndex((commentId) => id === commentId);
-    this.#movie.comments.splice(index, 1);
-
-    this.#commentsModel.delete(UpdateType.PATCH, id);
-  };
 
   //Изменение и обновление опций
 

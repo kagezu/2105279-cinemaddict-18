@@ -23,6 +23,7 @@ export default class CommentsModel extends Observable {
     this._notify(updateType, data);
   };
 
+  // Добавление комментария
   add = async (updateType, { id, comment }) => {
     try {
       const data = await this.#apiService.add(id, comment);
@@ -34,19 +35,18 @@ export default class CommentsModel extends Observable {
     }
   };
 
-  delete = (updateType, id) => {
-    const index = this.#comments.findIndex((comment) => comment.id === id);
-
-    if (index === -1) {
-      throw new Error('Can\'t delete unexisting comment');
+  // Удаление комментария
+  delete = async (updateType, { id, movie }) => {
+    try {
+      await this.#apiService.delete(id);
+      const index = movie.comments.findIndex((comment) => Number(comment) === id);
+      movie.comments.splice(index, 1);
+    } catch (err) {
+      //
     }
 
-    this.#comments = [
-      ...this.#comments.slice(0, index),
-      ...this.#comments.slice(index + 1),
-    ];
-
-    this._notify(updateType);
+    this._notify(UpdateType.MODEL, movie);
+    this._notify(updateType, movie);
   };
 
 }
