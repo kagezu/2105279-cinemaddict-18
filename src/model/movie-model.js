@@ -25,7 +25,7 @@ export default class MovieModel extends Observable {
   }
 
   update = async (updateType, update) => {
-    // try {
+
     const index = this.#movies.findIndex(({ id }) => id === update.id);
 
     if (index === -1) {
@@ -41,11 +41,6 @@ export default class MovieModel extends Observable {
     ];
 
     this._notify(updateType, movie);
-
-    // } catch (err) {
-    //   console.log(err);
-    // }
-
   };
 
 }
