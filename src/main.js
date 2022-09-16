@@ -5,7 +5,8 @@ import MovieModel from './model/movie-model.js';
 import CommentsModel from './model/comments-model.js';
 import FilterModel from './model/filter-model.js';
 import ProfileView from './view/profile-view.js';
-import FilmsApiService from './films-api-service.js';
+import FilmApi from './api/film-api.js';
+import CommentApi from './api/comment-api.js';
 
 const AUTHORIZATION = 'Basic hf08954hw578h75f0';
 const END_POINT = 'https://18.ecmascript.pages.academy/cinemaddict';
@@ -13,9 +14,10 @@ const END_POINT = 'https://18.ecmascript.pages.academy/cinemaddict';
 const siteMainElement = document.querySelector('.main');
 const siteHeaderElement = document.querySelector('.header');
 
-const filmsApiService = new FilmsApiService(END_POINT, AUTHORIZATION);
-const movieModel = new MovieModel(filmsApiService);
-const commentsModel = new CommentsModel(filmsApiService);
+const filmApi = new FilmApi(END_POINT, AUTHORIZATION);
+const commentApi = new CommentApi(END_POINT, AUTHORIZATION);
+const movieModel = new MovieModel(filmApi);
+const commentsModel = new CommentsModel(commentApi);
 const filterModel = new FilterModel();
 
 render(new ProfileView(), siteHeaderElement);

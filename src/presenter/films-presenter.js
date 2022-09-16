@@ -166,8 +166,9 @@ export default class FilmsPresenter {
   #handleViewAction = (actionType, updateType, update) => {
     switch (actionType) {
       case UserAction.UPDATE_MOVIE:
-        this.#movieModel.updateMovie(updateType, update);
+        this.#movieModel.update(updateType, update);
         break;
+      /*
       case UserAction.ADD_COMMENT:
         this.#commentsModel.addComment(updateType, update.comment);
         this.#movieModel.updateMovie(updateType, update.movie);
@@ -176,6 +177,7 @@ export default class FilmsPresenter {
         this.#commentsModel.deleteComment(updateType, update.id);
         this.#movieModel.updateMovie(updateType, update.movie);
         break;
+        */
     }
   };
 

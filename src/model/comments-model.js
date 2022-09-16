@@ -2,27 +2,29 @@ import Observable from '../framework/observable.js';
 
 export default class CommentsModel extends Observable {
   #comments = [];
-  #moviesApiService;
+  #apiService;
 
-  constructor(moviesApiService) {
+  constructor(apiService) {
     super();
-    this.#moviesApiService = moviesApiService;
+    this.#apiService = apiService;
   }
 
-  downloadComments = async (updateType, data) => {
+  get comments() {
+    return this.#comments;
+  }
+
+  download = async (updateType, data) => {
     const { id } = data;
     try {
-      this.#comments[id] = await this.#moviesApiService.getMovieComments(id);
+      this.#comments = await this.#apiService.get(id);
     } catch (err) {
-      this.#comments[id] = [];
+      this.#comments = [];
     }
 
     this._notify(updateType, data);
   };
 
-  getComments = (id) => this.#comments[id];
-
-  addComment = (updateType, update) => {
+  add = (updateType, update) => {
     this.#comments = [
       update,
       ...this.#comments,
@@ -31,7 +33,7 @@ export default class CommentsModel extends Observable {
     this._notify(updateType, update);
   };
 
-  deleteComment = (updateType, id) => {
+  delete = (updateType, id) => {
     const index = this.#comments.findIndex((comment) => comment.id === id);
 
     if (index === -1) {

@@ -24,12 +24,11 @@ export default class FilmDetailsPresenter {
     }
 
     this.#movie = movie;
-    const comments = this.#commentsModel.getComments(this.#movie.id);
     this.#movieModel.addObserver(this.#handleModelEvent);
     this.#commentsModel.addObserver(this.#handleModelEvent);
 
     const prevDetailsComponent = this.#detailsComponent;
-    this.#detailsComponent = new FilmDetailsView(this.#movie, comments);
+    this.#detailsComponent = new FilmDetailsView(this.#movie);
     this.#detailsComponent.setWatchlistClickHandler(this.#handleWatchlistClick);
     this.#detailsComponent.setWatchedClickHandler(this.#handleWatchedClick);
     this.#detailsComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
@@ -51,10 +50,7 @@ export default class FilmDetailsPresenter {
       replace(this.#detailsComponent, prevDetailsComponent);
     }
 
-    if (this.#movie?.comments?.length !== comments?.length) {
-      this.#commentsModel.downloadComments(UpdateType.PATCH, this.#movie);
-    }
-
+    this.#commentsModel.download(UpdateType.PATCH, this.#movie);
   };
 
   #closeDetailsView = () => {
@@ -76,7 +72,7 @@ export default class FilmDetailsPresenter {
   #updateDetailsComponent = () => this.#detailsComponent.updateElement(
     {
       movie: this.#movie,
-      listComments: this.#commentsModel.getComments(this.#movie.id),
+      comments: this.#commentsModel.comments,
     });
 
   // Добавление коментария
@@ -84,8 +80,8 @@ export default class FilmDetailsPresenter {
   #handleAddComment = (comment) => {
     this.#movie.comments.push(comment.id);
 
-    this.#commentsModel.addComment(UpdateType.PATCH, comment);
-    this.#movieModel.updateMovie(UpdateType.PATCH, this.#movie);
+    this.#commentsModel.add(UpdateType.PATCH, comment);
+    // this.#movieModel.updateMovie(UpdateType.PATCH, this.#movie);
   };
 
   // удаление коментария
@@ -94,25 +90,25 @@ export default class FilmDetailsPresenter {
     const index = this.#movie.comments.findIndex((commentId) => id === commentId);
     this.#movie.comments.splice(index, 1);
 
-    this.#movieModel.updateMovie(UpdateType.PATCH, this.#movie);
-    this.#commentsModel.deleteComment(UpdateType.PATCH, id);
+    // this.#movieModel.updateMovie(UpdateType.PATCH, this.#movie);
+    this.#commentsModel.delete(UpdateType.PATCH, id);
   };
 
   //Изменение и обновление опций
 
   #handleWatchlistClick = () => {
     this.#movie.userDetails.watchList = !this.#movie.userDetails.watchList;
-    this.#movieModel.updateMovie(UpdateType.MINOR, this.#movie);
+    this.#movieModel.update(UpdateType.MINOR, this.#movie);
   };
 
   #handleWatchedClick = () => {
     this.#movie.userDetails.alreadyWatched = !this.#movie.userDetails.alreadyWatched;
-    this.#movieModel.updateMovie(UpdateType.MINOR, this.#movie);
+    this.#movieModel.update(UpdateType.MINOR, this.#movie);
   };
 
   #handleFavoriteClick = () => {
     this.#movie.userDetails.favorite = !this.#movie.userDetails.favorite;
-    this.#movieModel.updateMovie(UpdateType.MINOR, this.#movie);
+    this.#movieModel.update(UpdateType.MINOR, this.#movie);
   };
 
   /**Обработчик события модели*/

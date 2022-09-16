@@ -103,7 +103,7 @@ const createTextarea = (message) => `
     <textarea class="film-details__comment-input" name="comment" placeholder="Select reaction below and write comment here">${message ? he.encode(message) : ''}</textarea>
   </label>`;
 
-const createFilmDetailsTemplate = ({ movie, listComments, emotion, message }) => {
+const createFilmDetailsTemplate = ({ movie, comments: listComments, emotion, message }) => {
   const { comments, filmInfo, userDetails } = movie;
   const { title, alternativeTitle, totalRating, poster, ageRating, director, writers, actors, release, runtime, genre, description } = filmInfo;
   const { watchList, alreadyWatched, favorite } = userDetails;
@@ -168,9 +168,9 @@ const createFilmDetailsTemplate = ({ movie, listComments, emotion, message }) =>
 
 export default class FilmDetailsView extends AbstractStatefulView {
 
-  constructor(movie, comments) {
+  constructor(movie) {
     super();
-    this._state = FilmDetailsView.parseMovieToState(movie, comments);
+    this._state = FilmDetailsView.parseMovieToState(movie);
     this._restoreHandlers();
   }
 
@@ -178,9 +178,9 @@ export default class FilmDetailsView extends AbstractStatefulView {
     return createFilmDetailsTemplate(this._state);
   }
 
-  static parseMovieToState = (movie, comments) => ({
+  static parseMovieToState = (movie) => ({
     movie,
-    listComments: comments,
+    comments: [],
     emotion: null,
     scroll: null,
     message: null
