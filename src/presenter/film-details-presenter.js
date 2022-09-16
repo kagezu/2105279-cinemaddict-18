@@ -68,20 +68,10 @@ export default class FilmDetailsPresenter {
     }
   };
 
-  /** Перерисовка попапа */
-  #updateDetailsComponent = () => this.#detailsComponent.updateElement(
-    {
-      movie: this.#movie,
-      comments: this.#commentsModel.comments,
-    });
-
   // Добавление коментария
 
   #handleAddComment = (comment) => {
-    this.#movie.comments.push(comment.id);
-
-    this.#commentsModel.add(UpdateType.PATCH, comment);
-    // this.#movieModel.updateMovie(UpdateType.PATCH, this.#movie);
+    this.#commentsModel.add(UpdateType.MINOR, { comment, id: this.#movie.id });
   };
 
   // удаление коментария
@@ -90,7 +80,6 @@ export default class FilmDetailsPresenter {
     const index = this.#movie.comments.findIndex((commentId) => id === commentId);
     this.#movie.comments.splice(index, 1);
 
-    // this.#movieModel.updateMovie(UpdateType.PATCH, this.#movie);
     this.#commentsModel.delete(UpdateType.PATCH, id);
   };
 
@@ -110,6 +99,13 @@ export default class FilmDetailsPresenter {
     this.#movie.userDetails.favorite = !this.#movie.userDetails.favorite;
     this.#movieModel.update(UpdateType.MINOR, this.#movie);
   };
+
+  /** Перерисовка попапа */
+  #updateDetailsComponent = () => this.#detailsComponent.updateElement(
+    {
+      movie: this.#movie,
+      comments: this.#commentsModel.comments,
+    });
 
   /**Обработчик события модели*/
   #handleModelEvent = (updateType, data) => {

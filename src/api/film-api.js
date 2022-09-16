@@ -6,7 +6,7 @@ export default class FilmApi extends ApiService {
   get movies() {
     return this._load({ url: 'movies' })
       .then(ApiService.parseResponse)
-      .then((movies) => movies.map(this.#adaptToClient));
+      .then((movies) => movies.map(FilmApi.adaptToClient));
   }
 
   update = async (movie) => {
@@ -19,10 +19,10 @@ export default class FilmApi extends ApiService {
 
     const parseResponse = await ApiService.parseResponse(response);
 
-    return this.#adaptToClient(parseResponse);
+    return FilmApi.adaptToClient(parseResponse);
   };
 
-  #adaptToClient = (movie) => {
+  static adaptToClient = (movie) => {
     const {
       id,
       comments,

@@ -20,11 +20,12 @@ const movieModel = new MovieModel(filmApi);
 const commentsModel = new CommentsModel(commentApi);
 const filterModel = new FilterModel();
 
-render(new ProfileView(), siteHeaderElement);
+commentsModel.addObserver(movieModel.updateModel);
 
 const navigationPresenter = new NavigationPresenter(siteMainElement, filterModel, movieModel);
 const filmsPresenter = new FilmsPresenter(siteMainElement, movieModel, commentsModel, filterModel);
 
+render(new ProfileView(), siteHeaderElement);
 navigationPresenter.init();
 filmsPresenter.init();
 movieModel.init();

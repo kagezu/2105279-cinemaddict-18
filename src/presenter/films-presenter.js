@@ -39,6 +39,7 @@ export default class FilmsPresenter {
     this.#filterModel = filterModel;
 
     this.#movieModel.addObserver(this.#handleModelEvent);
+    this.#commentsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
 
     this.#filmDetailsPresenter = new FilmDetailsPresenter(document.body, movieModel, commentsModel);
@@ -176,7 +177,6 @@ export default class FilmsPresenter {
     switch (updateType) {
       case UpdateType.PATCH: {
         this.#cardPresenter.get(data.id)?.init(data);
-        // this.#filmDetailsPresenter.init(data);
       }
         break;
       case UpdateType.MINOR:

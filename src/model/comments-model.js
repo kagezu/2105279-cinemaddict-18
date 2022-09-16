@@ -1,4 +1,5 @@
 import Observable from '../framework/observable.js';
+import { UpdateType } from '../const.js';
 
 export default class CommentsModel extends Observable {
   #comments = [];
@@ -14,23 +15,23 @@ export default class CommentsModel extends Observable {
   }
 
   download = async (updateType, data) => {
-    const { id } = data;
     try {
-      this.#comments = await this.#apiService.get(id);
+      this.#comments = await this.#apiService.get(data.id);
     } catch (err) {
       this.#comments = [];
     }
-
     this._notify(updateType, data);
   };
 
-  add = (updateType, update) => {
-    this.#comments = [
-      update,
-      ...this.#comments,
-    ];
-
-    this._notify(updateType, update);
+  add = async (updateType, { id, comment }) => {
+    try {
+      const data = await this.#apiService.add(id, comment);
+      this.#comments = data.comment;
+      this._notify(UpdateType.MODEL, data.movie);
+      this._notify(updateType, data.movie);
+    } catch (err) {
+      //
+    }
   };
 
   delete = (updateType, id) => {

@@ -25,8 +25,8 @@ export const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
-  GLOBAL: 'GLOBAL',
   INIT: 'INIT',
+  MODEL: 'MODEL'
 };
 
 export const Method = {

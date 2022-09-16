@@ -1,7 +1,6 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { formatStringToDate, formatStringToDateWithTime, formatMinutesToTime } from '../utils/date.js';
 import { emotions } from '../const.js';
-import { getRandomInt } from '../utils/random.js';
 import he from 'he';
 
 const createPoster = (poster) => `<img class="film-details__poster-img" src="${poster}" alt="">`;
@@ -221,10 +220,7 @@ export default class FilmDetailsView extends AbstractStatefulView {
 
     // Создание нового комментария
     const comment = {
-      'id': getRandomInt(99, 99999999),
-      'author': 'Movie Buff',
       'comment': message,
-      'date': new Date,
       emotion
     };
     this._callback.addComment(comment);
