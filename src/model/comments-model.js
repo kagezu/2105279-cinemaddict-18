@@ -1,18 +1,30 @@
-import { generateComments } from '../mock/comments.js';
 import Observable from '../framework/observable.js';
 
 export default class CommentsModel extends Observable {
-  #comments = Array.from({ length: 15 }, generateComments);
+  #comments = [];
+  #apiService;
+
+  constructor(apiService) {
+    super();
+    this.#apiService = apiService;
+  }
 
   get comments() {
     return this.#comments;
   }
 
-  set comments(comments) {
-    this.#comments = comments;
-  }
+  download = async (updateType, data) => {
+    const { id } = data;
+    try {
+      this.#comments = await this.#apiService.get(id);
+    } catch (err) {
+      this.#comments = [];
+    }
 
-  addComment = (updateType, update) => {
+    this._notify(updateType, data);
+  };
+
+  add = (updateType, update) => {
     this.#comments = [
       update,
       ...this.#comments,
@@ -21,7 +33,7 @@ export default class CommentsModel extends Observable {
     this._notify(updateType, update);
   };
 
-  deleteComment = (updateType, id) => {
+  delete = (updateType, id) => {
     const index = this.#comments.findIndex((comment) => comment.id === id);
 
     if (index === -1) {

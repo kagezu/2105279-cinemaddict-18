@@ -1,7 +1,7 @@
 export const ESCAPE_KEY_NAME = 'Escape';
 
 export const FilterType = {
-  ALL: 'all',
+  ALL: 'all movies',
   WATCHLIST: 'watchlist',
   HISTORY: 'history',
   FAVORITES: 'favorites'
@@ -14,13 +14,6 @@ export const SortType = {
 
 };
 
-export const filterTypeToText = {
-  [FilterType.ALL]: 'All movies',
-  [FilterType.WATCHLIST]: 'Watchlist',
-  [FilterType.HISTORY]: 'History',
-  [FilterType.FAVORITES]: 'Favorites'
-};
-
 export const UserAction = {
   UPDATE_MOVIE: 'UPDATE_MOVIE',
   ADD_COMMENT: 'ADD_COMMENT',
@@ -28,7 +21,19 @@ export const UserAction = {
 };
 
 export const UpdateType = {
+  MICRO: 'MICRO',
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  GLOBAL: 'GLOBAL',
+  INIT: 'INIT',
 };
+
+export const Method = {
+  GET: 'GET',
+  PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE',
+};
+
+export const emotions = ['smile', 'sleeping', 'puke', 'angry'];

@@ -1,31 +1,46 @@
-import { generateMovie } from '../mock/movie.js';
 import Observable from '../framework/observable.js';
+import { UpdateType } from '../const.js';
 
 export default class MovieModel extends Observable {
-  #movies = Array.from({ length: 22 }, generateMovie);
+  #apiService = null;
+  #movies = [];
+
+  constructor(apiService) {
+    super();
+    this.#apiService = apiService;
+  }
+
+  init = async () => {
+    try {
+      this.#movies = await this.#apiService.movies;
+    } catch (err) {
+      this.#movies = [];
+    }
+
+    this._notify(UpdateType.INIT);
+  };
 
   get movies() {
     return this.#movies;
   }
 
-  set movies(movies) {
-    this.#movies = movies;
-  }
+  update = async (updateType, update) => {
 
-  updateMovie = (updateType, update) => {
-    const index = this.#movies.findIndex((movie) => movie.id === update.id);
+    const index = this.#movies.findIndex(({ id }) => id === update.id);
 
     if (index === -1) {
       throw new Error('Can\'t update unexisting movie');
     }
 
+    const movie = await this.#apiService.update(update);
+
     this.#movies = [
       ...this.#movies.slice(0, index),
-      update,
+      movie,
       ...this.#movies.slice(index + 1),
     ];
 
-    this._notify(updateType, update);
+    this._notify(updateType, movie);
   };
 
 }

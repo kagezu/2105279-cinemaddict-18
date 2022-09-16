@@ -26,7 +26,7 @@ const createButton = (style, text, activated) => {
 
 const createFilmCardTemplate = ({ comments, filmInfo, userDetails }) => {
   const { title, totalRating, poster, release, runtime, genre, description } = filmInfo;
-  const { watchList, alreadyWatched, favorite } = userDetails;
+  const { watchlist, alreadyWatched, favorite } = userDetails;
   return `<article class="film-card">
           <a class="film-card__link">
             ${createTitle(title)}
@@ -41,7 +41,7 @@ const createFilmCardTemplate = ({ comments, filmInfo, userDetails }) => {
             ${createCountComments(comments)}
           </a>
           <div class="film-card__controls">
-          ${createButton('film-card__controls-item--add-to-watchlist', 'Add to watchlist', watchList)}
+          ${createButton('film-card__controls-item--add-to-watchlist', 'Add to watchlist', watchlist)}
           ${createButton('film-card__controls-item--mark-as-watched', 'Mark as watched', alreadyWatched)}
           ${createButton('film-card__controls-item--favorite', 'Mark as favorite', favorite)}
           </div>

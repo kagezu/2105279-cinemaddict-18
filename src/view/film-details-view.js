@@ -1,6 +1,6 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { formatStringToDate, formatStringToDateWithTime, formatMinutesToTime } from '../utils/date.js';
-import { emotions } from '../mock/comments.js';
+import { emotions } from '../const.js';
 import { getRandomInt } from '../utils/random.js';
 import he from 'he';
 
@@ -76,7 +76,7 @@ const createComment = (message) => message ?
   </li>` : '';
 const createComments = (comments, listComments) => {
   const template = comments.length ? comments.map(
-    (index) => createComment(listComments.find(
+    (index) => createComment(listComments?.find(
       ({ id }) => id === index)
     )
   )
@@ -103,10 +103,10 @@ const createTextarea = (message) => `
     <textarea class="film-details__comment-input" name="comment" placeholder="Select reaction below and write comment here">${message ? he.encode(message) : ''}</textarea>
   </label>`;
 
-const createFilmDetailsTemplate = ({ movie, listComments, emotion, message }) => {
+const createFilmDetailsTemplate = ({ movie, comments: listComments, emotion, message }) => {
   const { comments, filmInfo, userDetails } = movie;
   const { title, alternativeTitle, totalRating, poster, ageRating, director, writers, actors, release, runtime, genre, description } = filmInfo;
-  const { watchList, alreadyWatched, favorite } = userDetails;
+  const { watchlist, alreadyWatched, favorite } = userDetails;
   return `<section class="film-details">
   <div class="film-details__inner">
     <div class="film-details__top-container">
@@ -143,7 +143,7 @@ const createFilmDetailsTemplate = ({ movie, listComments, emotion, message }) =>
       </div>
 
       <section class="film-details__controls">
-      ${createButton('watchlist', 'Add to watchlist', watchList)}
+      ${createButton('watchlist', 'Add to watchlist', watchlist)}
       ${createButton('watched', 'Already watched', alreadyWatched)}
       ${createButton('favorite', 'Add to favorites', favorite)}
       </section>
@@ -166,25 +166,21 @@ const createFilmDetailsTemplate = ({ movie, listComments, emotion, message }) =>
 </section>`;
 };
 
-// Открытый попап
-let openDetailsComponent = null;
-
 export default class FilmDetailsView extends AbstractStatefulView {
 
-  constructor(movie, comments) {
+  constructor(movie) {
     super();
-    this._state = FilmDetailsView.parseMovieToState(movie, comments);
+    this._state = FilmDetailsView.parseMovieToState(movie);
     this._restoreHandlers();
-    openDetailsComponent = this;
   }
 
   get template() {
     return createFilmDetailsTemplate(this._state);
   }
 
-  static parseMovieToState = (movie, comments) => ({
+  static parseMovieToState = (movie) => ({
     movie,
-    listComments: comments,
+    comments: [],
     emotion: null,
     scroll: null,
     message: null
@@ -194,8 +190,6 @@ export default class FilmDetailsView extends AbstractStatefulView {
     'movie': state.movie,
     'comments': state.comments
   });
-
-  static getOpenPopup = () => openDetailsComponent;
 
   _restoreHandlers = () => {
     this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#closeButtonClickHandler);
