@@ -39,7 +39,7 @@ export default class CommentsModel extends Observable {
   delete = async (updateType, { id, movie }) => {
     try {
       await this.#apiService.delete(id);
-      const index = movie.comments.findIndex((comment) => Number(comment) === id);
+      const index = movie.comments.findIndex((comment) => comment === id);
       movie.comments.splice(index, 1);
     } catch (err) {
       //

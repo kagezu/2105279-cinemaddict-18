@@ -1,5 +1,7 @@
 export const ESCAPE_KEY_NAME = 'Escape';
 
+export const emotions = ['smile', 'sleeping', 'puke', 'angry'];
+
 export const FilterType = {
   ALL: 'all movies',
   WATCHLIST: 'watchlist',
@@ -36,4 +38,7 @@ export const Method = {
   DELETE: 'DELETE',
 };
 
-export const emotions = ['smile', 'sleeping', 'puke', 'angry'];
+export const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000
+};

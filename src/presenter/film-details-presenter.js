@@ -1,7 +1,8 @@
 import FilmDetailsView from '../view/film-details-view.js';
 import { render, remove, replace } from '../framework/render.js';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 import { isEscapeKey } from '../utils/common.js';
-import { UpdateType } from '../const.js';
+import { UpdateType, TimeLimit } from '../const.js';
 
 export default class FilmDetailsPresenter {
   #container;
@@ -10,6 +11,7 @@ export default class FilmDetailsPresenter {
   #movie = null;
   #detailsComponent = null;
   #isOpenDetails = false;
+  #uiBlocker = new UiBlocker(TimeLimit.LOWER_LIMIT, TimeLimit.UPPER_LIMIT);
 
   constructor(container, movieModel, commentsModel) {
     this.#container = container;
@@ -50,6 +52,7 @@ export default class FilmDetailsPresenter {
       replace(this.#detailsComponent, prevDetailsComponent);
     }
 
+    this.#uiBlocker.block();
     this.#commentsModel.download(UpdateType.PATCH, this.#movie);
   };
 
@@ -69,34 +72,46 @@ export default class FilmDetailsPresenter {
   };
 
   // Добавление коментария
-  #handleAddComment = (comment) => this.#commentsModel.add(UpdateType.MINOR, { comment, id: this.#movie.id });
+  #handleAddComment = (comment) => {
+    // this.#uiBlocker.block();
+    this.#commentsModel.add(UpdateType.MINOR, { comment, id: this.#movie.id });
+  };
 
   // удаление коментария
-  #handleDeleteComment = (id) => this.#commentsModel.delete(UpdateType.MINOR, { id, movie: this.#movie });
+  #handleDeleteComment = (id) => {
+    this.#uiBlocker.block();
+    this.#commentsModel.delete(UpdateType.MINOR, { id, movie: this.#movie });
+  };
 
 
   //Изменение и обновление опций
 
+  #updateMovie = () => {
+    this.#uiBlocker.block();
+    this.#movieModel.update(UpdateType.MINOR, this.#movie);
+  };
+
   #handleWatchlistClick = () => {
     this.#movie.userDetails.watchlist = !this.#movie.userDetails.watchlist;
-    this.#movieModel.update(UpdateType.MINOR, this.#movie);
+    this.#updateMovie();
   };
 
   #handleWatchedClick = () => {
     this.#movie.userDetails.alreadyWatched = !this.#movie.userDetails.alreadyWatched;
-    this.#movieModel.update(UpdateType.MINOR, this.#movie);
+    this.#updateMovie();
   };
 
   #handleFavoriteClick = () => {
     this.#movie.userDetails.favorite = !this.#movie.userDetails.favorite;
-    this.#movieModel.update(UpdateType.MINOR, this.#movie);
+    this.#updateMovie();
   };
 
-  /** Перерисовка попапа */
+  /** Перерисовка и разблокировка попапа */
   #updateDetailsComponent = () => this.#detailsComponent.updateElement(
     {
       movie: this.#movie,
       comments: this.#commentsModel.comments,
+      isBlocked: false
     });
 
   /**Обработчик события модели*/
@@ -118,6 +133,7 @@ export default class FilmDetailsPresenter {
         this.#updateDetailsComponent();
         break;
     }
-  };
 
+    this.#uiBlocker.unblock();
+  };
 }
