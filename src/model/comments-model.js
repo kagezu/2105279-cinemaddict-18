@@ -31,7 +31,7 @@ export default class CommentsModel extends Observable {
       this._notify(UpdateType.MODEL, data.movie);
       this._notify(updateType, data.movie);
     } catch (err) {
-      //
+      throw new Error('Комментарий не загружен');
     }
   };
 

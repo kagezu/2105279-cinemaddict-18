@@ -72,9 +72,14 @@ export default class FilmDetailsPresenter {
   };
 
   // Добавление коментария
-  #handleAddComment = (comment) => {
-    // this.#uiBlocker.block();
-    this.#commentsModel.add(UpdateType.MINOR, { comment, id: this.#movie.id });
+  #handleAddComment = async (comment) => {
+    this.#uiBlocker.block();
+    try {
+      await this.#commentsModel.add(UpdateType.MINOR, { comment, id: this.#movie.id });
+    } catch (err) {
+      this.#uiBlocker.unblock();
+      // this.#detailsComponent.shake(() => { });
+    }
   };
 
   // удаление коментария

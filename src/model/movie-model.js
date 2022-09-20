@@ -24,12 +24,16 @@ export default class MovieModel extends Observable {
     return this.#movies;
   }
 
+  get = (id) => this.#movies.find((movie) => movie.id === id);
+
   update = async (updateType, update) => {
-
-    const movie = await this.#apiService.update(update);
-    this.#setMovie(movie);
-
-    this._notify(updateType, movie);
+    try {
+      const movie = await this.#apiService.update(update);
+      this.#setMovie(movie);
+      this._notify(updateType, movie);
+    } catch (err) {
+      throw new Error('MovieModel.update()');
+    }
   };
 
   updateModel = (updateType, update) => {
@@ -41,6 +45,10 @@ export default class MovieModel extends Observable {
   #setMovie = (movie) => {
 
     const index = this.#movies.findIndex(({ id }) => id === movie.id);
+
+    if (index === -1) {
+      throw new Error('MovieModel.#setMovie');
+    }
 
     this.#movies = [
       ...this.#movies.slice(0, index),

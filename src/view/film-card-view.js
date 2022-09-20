@@ -1,4 +1,4 @@
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { formatStringToYear, formatMinutesToTime } from '../utils/date.js';
 
 const createTitle = (title) => title ? `<h3 class="film-card__title">${title}</h3>` : '';
@@ -19,16 +19,21 @@ const createCountComments = ({ length }) => {
   const count = length ? `${length} comments` : 'No comments yet';
   return `<span class="film-card__comments">${count}</span>`;
 };
-const createButton = (style, text, activated) => {
+const createButton = (style, text, activated, isDisabled) => {
   const activatedStyle = activated ? ' film-card__controls-item--active' : '';
-  return `<button class="film-card__controls-item ${style}${activatedStyle}" type="button">${text}</button>`;
+  return `
+  <button class="film-card__controls-item ${style}${activatedStyle}" 
+  type="button"
+  ${isDisabled ? ' disabled' : ''}>${text}</button>`;
 };
 
-const createFilmCardTemplate = ({ comments, filmInfo, userDetails }) => {
+const createFilmCardTemplate = ({ movie, isDisabled }) => {
+  const { comments, filmInfo, userDetails } = movie;
   const { title, totalRating, poster, release, runtime, genre, description } = filmInfo;
   const { watchlist, alreadyWatched, favorite } = userDetails;
   return `<article class="film-card">
-          <a class="film-card__link">
+          <a class="film-card__link"
+          ${isDisabled ? ' disabled' : ''}>
             ${createTitle(title)}
             ${createRating(totalRating)}
             <p class="film-card__info">
@@ -41,24 +46,35 @@ const createFilmCardTemplate = ({ comments, filmInfo, userDetails }) => {
             ${createCountComments(comments)}
           </a>
           <div class="film-card__controls">
-          ${createButton('film-card__controls-item--add-to-watchlist', 'Add to watchlist', watchlist)}
-          ${createButton('film-card__controls-item--mark-as-watched', 'Mark as watched', alreadyWatched)}
-          ${createButton('film-card__controls-item--favorite', 'Mark as favorite', favorite)}
+          ${createButton('film-card__controls-item--add-to-watchlist', 'Add to watchlist', watchlist, isDisabled)}
+          ${createButton('film-card__controls-item--mark-as-watched', 'Mark as watched', alreadyWatched, isDisabled)}
+          ${createButton('film-card__controls-item--favorite', 'Mark as favorite', favorite, isDisabled)}
           </div>
         </article>`;
 };
 
-export default class FilmCardView extends AbstractView {
-  #movie;
+export default class FilmCardView extends AbstractStatefulView {
 
   constructor(movie) {
     super();
-    this.#movie = movie;
+    this._state = FilmCardView.parseMovieToState(movie);
   }
 
   get template() {
-    return createFilmCardTemplate(this.#movie);
+    return createFilmCardTemplate(this._state);
   }
+
+  static parseMovieToState = (movie) => ({
+    movie,
+    isDisabled: false
+  });
+
+  _restoreHandlers = () => {
+    this.element.querySelector('.film-card__link').addEventListener('click', this.#linkClickHandler);
+    this.element.querySelector('.film-card__controls-item--add-to-watchlist').addEventListener('click', this.#watchlistClickHandler);
+    this.element.querySelector('.film-card__controls-item--mark-as-watched').addEventListener('click', this.#watchedClickHandler);
+    this.element.querySelector('.film-card__controls-item--favorite').addEventListener('click', this.#favoriteClickHandler);
+  };
 
   // Открытие попапа
 

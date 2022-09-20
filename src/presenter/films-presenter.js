@@ -166,13 +166,20 @@ export default class FilmsPresenter {
   };
 
   /**Обработчик обновления модели*/
-  #handleViewAction = (actionType, updateType, update) => {
+  #handleViewAction = async (actionType, updateType, update) => {
+    this.#uiBlocker.block();
+
     switch (actionType) {
       case UserAction.UPDATE_MOVIE:
-        this.#movieModel.update(updateType, update);
-        this.#uiBlocker.block();
+        try {
+          this.#cardPresenter.get(update.id)?.setSaving();
+          await this.#movieModel.update(updateType, update);
+        } catch (err) {
+          this.#cardPresenter.get(update.id)?.setAborting();
+        }
         break;
     }
+    this.#uiBlocker.unblock();
   };
 
   /**Обработчик события модели*/
@@ -196,8 +203,6 @@ export default class FilmsPresenter {
         this.#renderViews();
         break;
     }
-
-    this.#uiBlocker.unblock();
   };
 
 }
