@@ -25,14 +25,16 @@ export default class CommentsModel extends Observable {
 
   // Добавление комментария
   add = async (updateType, { id, comment }) => {
+    let data;
     try {
-      const data = await this.#apiService.add(id, comment);
-      this.#comments = data.comment;
-      this._notify(UpdateType.MODEL, data.movie);
-      this._notify(updateType, data.movie);
+      data = await this.#apiService.add(id, comment);
     } catch (err) {
-      throw new Error('Комментарий не загружен');
+      throw new Error('CommentsModel.add()');
     }
+
+    this.#comments = data.comment;
+    this._notify(UpdateType.MODEL, data.movie);
+    this._notify(updateType, data.movie);
   };
 
   // Удаление комментария

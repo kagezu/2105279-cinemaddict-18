@@ -101,7 +101,7 @@ export default class FilmDetailsPresenter {
   };
 
   /** Перерисовка и разблокировка попапа */
-  #updateDetailsComponent = () => this.#detailsComponent.updateElement(
+  #resetDetailsComponent = () => this.#detailsComponent.updateElement(
     {
       movie: this.#movie,
       comments: this.#commentsModel.comments,
@@ -117,24 +117,26 @@ export default class FilmDetailsPresenter {
         try {
           await this.#movieModel.update(updateType, update);
         } catch (err) {
-          this.#detailsComponent.shake(this.#updateDetailsComponent);
+          this.#detailsComponent.shake(this.#resetDetailsComponent);
         }
         break;
 
       case UserAction.DELETE_COMMENT:
         try {
-          this.#detailsComponent.updateElement({ deleteId: update.id });
+          this.#detailsComponent.updateElement({ deleteId: update.id, isBlocked: true });
           await this.#commentsModel.delete(updateType, update);
         } catch (err) {
-          this.#detailsComponent.shake(this.#updateDetailsComponent);
+          this.#detailsComponent.shake(this.#resetDetailsComponent);
         }
         break;
 
       case UserAction.ADD_COMMENT:
         try {
-          await this.#movieModel.update(updateType, update);
+          this.#detailsComponent.updateElement({ isBlocked: true });
+          await this.#commentsModel.add(updateType, update);
+          this.#detailsComponent.updateElement({ message: null, emotion: null });
         } catch (err) {
-          this.#detailsComponent.shake(this.#updateDetailsComponent);
+          this.#detailsComponent.shake(this.#resetDetailsComponent);
         }
         break;
     }
@@ -153,12 +155,12 @@ export default class FilmDetailsPresenter {
 
       case UpdateType.PATCH:
         this.#movie = data;
-        this.#updateDetailsComponent();
+        this.#resetDetailsComponent();
         break;
 
       case UpdateType.MINOR:
         this.#movie = data;
-        this.#updateDetailsComponent();
+        this.#resetDetailsComponent();
         break;
     }
   };
