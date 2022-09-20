@@ -1,7 +1,6 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { formatStringToDate, formatStringToDateWithTime, formatMinutesToTime } from '../utils/date.js';
 import { emotions } from '../const.js';
-import { getRandomInt } from '../utils/random.js';
 import he from 'he';
 
 const createPoster = (poster) => `<img class="film-details__poster-img" src="${poster}" alt="">`;
@@ -53,13 +52,14 @@ const createGenres = (genres) => {
   </tr>` : '';
 };
 const createDescription = (description) => description ? `<p class="film-details__film-description">${description}</p>` : '';
-const createButton = (id, text, activated) => {
+const createButton = (id, text, activated, isBlocked) => {
   const style = activated ? ' film-details__control-button--active' : '';
-  return `<button type="button" class="film-details__control-button film-details__control-button--${id}${style}" id="${id}" name="${id}">${text}</button>`;
+  return `<button type="button" class="film-details__control-button film-details__control-button--${id}${style}" id="${id}" name="${id}"
+  ${isBlocked ? ' disabled' : ''}>${text}</button>`;
 };
 const createCountComments = (count) => `<h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${count ? count : 0}</span></h3>`;
 const createSmile = (emotion) => emotion ? `<img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-smile">` : '';
-const createComment = (message) => message ?
+const createComment = (message, deleteId) => message ?
   `<li class="film-details__comment">
     <span class="film-details__comment-emoji">
        ${createSmile(message.emotion)}
@@ -70,40 +70,41 @@ const createComment = (message) => message ?
         <span class="film-details__comment-author">${message.author}</span>
         <span class="film-details__comment-day">${formatStringToDateWithTime(message.date)}</span>
         <button class="film-details__comment-delete"
-        data-id ="${message.id}">Delete</button>
+        data-id ="${message.id}"
+        ${deleteId ? ' disabled' : ''}>
+        ${deleteId === message.id ? 'Deleting...' : 'Delete'}</button>
       </p>
     </div>
   </li>` : '';
-const createComments = (comments, listComments) => {
-  const template = comments.length ? comments.map(
-    (index) => createComment(listComments?.find(
-      ({ id }) => id === index)
-    )
-  )
+const createComments = (comments, listComments, deleteId) => {
+  const template = comments.length ? comments
+    .map((index) => createComment(listComments?.find(({ id }) => id === index), deleteId))
     .join('') : '';
   return `<ul class="film-details__comments-list">${template}</ul>`;
 };
-const createEmojiButton = (emotion, isChecked) => `
+const createEmojiButton = (emotion, isChecked, isBlocked) => `
             <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio"
             id="emoji-${emotion}"
             value="${emotion}"
-            ${isChecked ? ' checked' : ''}>
+            ${isChecked ? ' checked' : ''}
+            ${isBlocked ? 'disabled' : ''}>
             <label class="film-details__emoji-label" for="emoji-${emotion}">
               <img src="./images/emoji/${emotion}.png" width="30" height="30" alt="emoji" data-emotion="${emotion}">
             </label>`;
-const createEmojiButtons = (current) => {
-  const buttonList = emotions.map((emotion) => createEmojiButton(emotion, current === emotion)).join('');
+const createEmojiButtons = (current, isBlocked) => {
+  const buttonList = emotions.map((emotion) => createEmojiButton(emotion, current === emotion, isBlocked)).join('');
   return `
     <div class="film-details__emoji-list">
       ${buttonList}
     </div>`;
 };
-const createTextarea = (message) => `
+const createTextarea = (message, isBlocked) => `
   <label class="film-details__comment-label">
-    <textarea class="film-details__comment-input" name="comment" placeholder="Select reaction below and write comment here">${message ? he.encode(message) : ''}</textarea>
+    <textarea class="film-details__comment-input" name="comment" placeholder="Select reaction below and write comment here"
+    ${isBlocked ? 'disabled' : ''}>${message ? he.encode(message) : ''}</textarea>
   </label>`;
 
-const createFilmDetailsTemplate = ({ movie, comments: listComments, emotion, message }) => {
+const createFilmDetailsTemplate = ({ movie, comments: listComments, emotion, message, isBlocked, deleteId }) => {
   const { comments, filmInfo, userDetails } = movie;
   const { title, alternativeTitle, totalRating, poster, ageRating, director, writers, actors, release, runtime, genre, description } = filmInfo;
   const { watchlist, alreadyWatched, favorite } = userDetails;
@@ -143,22 +144,22 @@ const createFilmDetailsTemplate = ({ movie, comments: listComments, emotion, mes
       </div>
 
       <section class="film-details__controls">
-      ${createButton('watchlist', 'Add to watchlist', watchlist)}
-      ${createButton('watched', 'Already watched', alreadyWatched)}
-      ${createButton('favorite', 'Add to favorites', favorite)}
+      ${createButton('watchlist', 'Add to watchlist', watchlist, isBlocked)}
+      ${createButton('watched', 'Already watched', alreadyWatched, isBlocked)}
+      ${createButton('favorite', 'Add to favorites', favorite, isBlocked)}
       </section>
     </div>
 
     <div class="film-details__bottom-container">
       <section class="film-details__comments-wrap">
         ${createCountComments(comments.length)}
-        ${createComments(comments, listComments)}
+        ${createComments(comments, listComments, deleteId)}
 
         <form class="film-details__new-comment" action="" method="get">
           <div class="film-details__add-emoji-label">${createSmile(emotion)}</div>
-
-          ${createTextarea(message)}
-          ${createEmojiButtons(emotion)}
+          
+          ${createTextarea(message, isBlocked)}
+          ${createEmojiButtons(emotion, isBlocked)}
         </form>
       </section>
     </div>
@@ -183,7 +184,9 @@ export default class FilmDetailsView extends AbstractStatefulView {
     comments: [],
     emotion: null,
     scroll: null,
-    message: null
+    message: null,
+    isBlocked: false,
+    deleteId: null
   });
 
   static parseStateToMove = (state) => ({
@@ -221,13 +224,12 @@ export default class FilmDetailsView extends AbstractStatefulView {
 
     // Создание нового комментария
     const comment = {
-      'id': getRandomInt(99, 99999999),
-      'author': 'Movie Buff',
       'comment': message,
-      'date': new Date,
       emotion
     };
+    this.updateElement({ isBlocked: true });
     this._callback.addComment(comment);
+    this._setState({ isBlocked: false });
   };
 
 
@@ -241,7 +243,9 @@ export default class FilmDetailsView extends AbstractStatefulView {
       return;
     }
     evt.preventDefault();
-    this._callback.deleteComment(Number(evt.target.dataset.id));
+    this.updateElement({ deleteId: evt.target.dataset.id });
+    this._callback.deleteComment(evt.target.dataset.id);
+    this._setState({ deleteId: null });
   };
 
   // Закрытие попапа
@@ -290,14 +294,15 @@ export default class FilmDetailsView extends AbstractStatefulView {
 
   // Выбор эмоции
   #emotionClickHandler = (evt) => {
+    if (evt.target.tagName !== 'IMG' || this._state.isBlocked) {
+      return;
+    }
     evt.preventDefault();
-    if (evt.target.tagName === 'IMG') {
-      const emotion = evt.target.dataset.emotion;
-      if (this._state.emotion !== emotion) {
-        this.updateElement({
-          emotion: evt.target.dataset.emotion
-        });
-      }
+    const emotion = evt.target.dataset.emotion;
+    if (this._state.emotion !== emotion) {
+      this.updateElement({
+        emotion: evt.target.dataset.emotion
+      });
     }
   };
 

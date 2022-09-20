@@ -1,4 +1,5 @@
 import Observable from '../framework/observable.js';
+import { UpdateType } from '../const.js';
 
 export default class CommentsModel extends Observable {
   #comments = [];
@@ -14,38 +15,40 @@ export default class CommentsModel extends Observable {
   }
 
   download = async (updateType, data) => {
-    const { id } = data;
     try {
-      this.#comments = await this.#apiService.get(id);
+      this.#comments = await this.#apiService.get(data.id);
     } catch (err) {
       this.#comments = [];
     }
-
     this._notify(updateType, data);
   };
 
-  add = (updateType, update) => {
-    this.#comments = [
-      update,
-      ...this.#comments,
-    ];
-
-    this._notify(updateType, update);
-  };
-
-  delete = (updateType, id) => {
-    const index = this.#comments.findIndex((comment) => comment.id === id);
-
-    if (index === -1) {
-      throw new Error('Can\'t delete unexisting comment');
+  // Добавление комментария
+  add = async (updateType, { id, comment }) => {
+    let data;
+    try {
+      data = await this.#apiService.add(id, comment);
+    } catch (err) {
+      throw new Error('CommentsModel.add()');
     }
 
-    this.#comments = [
-      ...this.#comments.slice(0, index),
-      ...this.#comments.slice(index + 1),
-    ];
+    this.#comments = data.comment;
+    this._notify(UpdateType.MODEL, data.movie);
+    this._notify(updateType, data.movie);
+  };
 
-    this._notify(updateType);
+  // Удаление комментария
+  delete = async (updateType, { id, movie }) => {
+    try {
+      await this.#apiService.delete(id);
+      const index = movie.comments.findIndex((comment) => comment === id);
+      movie.comments.splice(index, 1);
+    } catch (err) {
+      throw new Error('CommentsModel.delete()');
+    }
+
+    this._notify(UpdateType.MODEL, movie);
+    this._notify(updateType, movie);
   };
 
 }

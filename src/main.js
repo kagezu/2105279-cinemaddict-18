@@ -8,7 +8,7 @@ import ProfileView from './view/profile-view.js';
 import FilmApi from './api/film-api.js';
 import CommentApi from './api/comment-api.js';
 
-const AUTHORIZATION = 'Basic hf08954hw578h75f0';
+const AUTHORIZATION = 'Basic hf089f435fg578h75f0';
 const END_POINT = 'https://18.ecmascript.pages.academy/cinemaddict';
 
 const siteMainElement = document.querySelector('.main');
@@ -20,11 +20,12 @@ const movieModel = new MovieModel(filmApi);
 const commentsModel = new CommentsModel(commentApi);
 const filterModel = new FilterModel();
 
-render(new ProfileView(), siteHeaderElement);
+commentsModel.addObserver(movieModel.updateModel);
 
 const navigationPresenter = new NavigationPresenter(siteMainElement, filterModel, movieModel);
 const filmsPresenter = new FilmsPresenter(siteMainElement, movieModel, commentsModel, filterModel);
 
+render(new ProfileView(), siteHeaderElement);
 navigationPresenter.init();
 filmsPresenter.init();
 movieModel.init();

@@ -6,23 +6,26 @@ export default class FilmApi extends ApiService {
   get movies() {
     return this._load({ url: 'movies' })
       .then(ApiService.parseResponse)
-      .then((movies) => movies.map(this.#adaptToClient));
+      .then((movies) => movies.map(FilmApi.adaptToClient));
   }
 
   update = async (movie) => {
-    const response = await this._load({
-      url: `movies/${movie.id}`,
-      method: Method.PUT,
-      body: JSON.stringify(this.#adaptToServer(movie)),
-      headers: new Headers({ 'Content-Type': 'application/json' }),
-    });
+    try {
+      const response = await this._load({
+        url: `movies/${movie.id}`,
+        method: Method.PUT,
+        body: JSON.stringify(this.#adaptToServer(movie)),
+        headers: new Headers({ 'Content-Type': 'application/json' }),
+      });
 
-    const parseResponse = await ApiService.parseResponse(response);
-
-    return this.#adaptToClient(parseResponse);
+      const parseResponse = await ApiService.parseResponse(response);
+      return FilmApi.adaptToClient(parseResponse);
+    } catch (err) {
+      throw new Error('FilmApi.update()');
+    }
   };
 
-  #adaptToClient = (movie) => {
+  static adaptToClient = (movie) => {
     const {
       id,
       comments,

@@ -5,10 +5,11 @@ import FilmListContainerView from '../view/film-list-container.js';
 import ShowMoreButtonView from '../view/show-more-button.js';
 import LoadingView from '../view/loading-view.js';
 import { render, remove } from '../framework/render.js';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 import FilmCardPresenter from './film-card-presenter.js';
 import FilmDetailsPresenter from './film-details-presenter.js';
 import { sortDate, sortRating } from '../utils/common.js';
-import { SortType, UserAction, UpdateType } from '../const.js';
+import { SortType, UserAction, UpdateType, TimeLimit } from '../const.js';
 import { filter } from '../utils/filter.js';
 
 const CARD_COUNT_PER_STEP = 5;
@@ -16,6 +17,7 @@ const CARD_COUNT_PER_STEP = 5;
 export default class FilmsPresenter {
 
   #loadingComponent = new LoadingView();
+  #uiBlocker = new UiBlocker(TimeLimit.LOWER_LIMIT, TimeLimit.UPPER_LIMIT);
   #container;
   #filmsContainer;
   #filmListContainer;
@@ -39,6 +41,7 @@ export default class FilmsPresenter {
     this.#filterModel = filterModel;
 
     this.#movieModel.addObserver(this.#handleModelEvent);
+    this.#commentsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
 
     this.#filmDetailsPresenter = new FilmDetailsPresenter(document.body, movieModel, commentsModel);
@@ -163,12 +166,20 @@ export default class FilmsPresenter {
   };
 
   /**Обработчик обновления модели*/
-  #handleViewAction = (actionType, updateType, update) => {
+  #handleViewAction = async (actionType, updateType, update) => {
+    this.#uiBlocker.block();
+
     switch (actionType) {
       case UserAction.UPDATE_MOVIE:
-        this.#movieModel.update(updateType, update);
+        try {
+          this.#cardPresenter.get(update.id)?.setSaving();
+          await this.#movieModel.update(updateType, update);
+        } catch (err) {
+          this.#cardPresenter.get(update.id)?.setAborting();
+        }
         break;
     }
+    this.#uiBlocker.unblock();
   };
 
   /**Обработчик события модели*/
@@ -176,7 +187,6 @@ export default class FilmsPresenter {
     switch (updateType) {
       case UpdateType.PATCH: {
         this.#cardPresenter.get(data.id)?.init(data);
-        // this.#filmDetailsPresenter.init(data);
       }
         break;
       case UpdateType.MINOR:

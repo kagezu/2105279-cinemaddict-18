@@ -1,7 +1,8 @@
 import FilmDetailsView from '../view/film-details-view.js';
 import { render, remove, replace } from '../framework/render.js';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 import { isEscapeKey } from '../utils/common.js';
-import { UpdateType } from '../const.js';
+import { UpdateType, TimeLimit, UserAction } from '../const.js';
 
 export default class FilmDetailsPresenter {
   #container;
@@ -10,6 +11,7 @@ export default class FilmDetailsPresenter {
   #movie = null;
   #detailsComponent = null;
   #isOpenDetails = false;
+  #uiBlocker = new UiBlocker(TimeLimit.LOWER_LIMIT, TimeLimit.UPPER_LIMIT);
 
   constructor(container, movieModel, commentsModel) {
     this.#container = container;
@@ -68,47 +70,79 @@ export default class FilmDetailsPresenter {
     }
   };
 
-  /** Перерисовка попапа */
-  #updateDetailsComponent = () => this.#detailsComponent.updateElement(
-    {
-      movie: this.#movie,
-      comments: this.#commentsModel.comments,
-    });
-
-  // Добавление коментария
-
+  // Добавление комментария
   #handleAddComment = (comment) => {
-    this.#movie.comments.push(comment.id);
-
-    this.#commentsModel.add(UpdateType.PATCH, comment);
-    // this.#movieModel.updateMovie(UpdateType.PATCH, this.#movie);
+    this.#viewAction(UserAction.ADD_COMMENT, UpdateType.MINOR, { comment, id: this.#movie.id });
   };
 
-  // удаление коментария
-
+  // удаление комментария
   #handleDeleteComment = (id) => {
-    const index = this.#movie.comments.findIndex((commentId) => id === commentId);
-    this.#movie.comments.splice(index, 1);
-
-    // this.#movieModel.updateMovie(UpdateType.PATCH, this.#movie);
-    this.#commentsModel.delete(UpdateType.PATCH, id);
+    this.#viewAction(UserAction.DELETE_COMMENT, UpdateType.MINOR, { id, movie: this.#movie });
   };
 
-  //Изменение и обновление опций
+  //Изменение опций
 
   #handleWatchlistClick = () => {
-    this.#movie.userDetails.watchlist = !this.#movie.userDetails.watchlist;
-    this.#movieModel.update(UpdateType.MINOR, this.#movie);
+    const movie = JSON.parse(JSON.stringify(this.#movie));
+    movie.userDetails.watchlist = !movie.userDetails.watchlist;
+    this.#viewAction(UserAction.UPDATE_MOVIE, UpdateType.MINOR, movie);
   };
 
   #handleWatchedClick = () => {
-    this.#movie.userDetails.alreadyWatched = !this.#movie.userDetails.alreadyWatched;
-    this.#movieModel.update(UpdateType.MINOR, this.#movie);
+    const movie = JSON.parse(JSON.stringify(this.#movie));
+    movie.userDetails.alreadyWatched = !movie.userDetails.alreadyWatched;
+    this.#viewAction(UserAction.UPDATE_MOVIE, UpdateType.MINOR, movie);
   };
 
   #handleFavoriteClick = () => {
-    this.#movie.userDetails.favorite = !this.#movie.userDetails.favorite;
-    this.#movieModel.update(UpdateType.MINOR, this.#movie);
+    const movie = JSON.parse(JSON.stringify(this.#movie));
+    movie.userDetails.favorite = !movie.userDetails.favorite;
+    this.#viewAction(UserAction.UPDATE_MOVIE, UpdateType.MINOR, movie);
+  };
+
+  /** Перерисовка и разблокировка попапа */
+  #resetDetailsComponent = () => this.#detailsComponent.updateElement(
+    {
+      movie: this.#movie,
+      comments: this.#commentsModel.comments,
+      isBlocked: false,
+      deleteId: null
+    });
+
+  #viewAction = async (actionType, updateType, update) => {
+    this.#uiBlocker.block();
+
+    switch (actionType) {
+      case UserAction.UPDATE_MOVIE:
+        try {
+          this.#detailsComponent.updateElement({ isBlocked: true });
+          await this.#movieModel.update(updateType, update);
+        } catch (err) {
+          this.#detailsComponent.shake(this.#resetDetailsComponent);
+        }
+        break;
+
+      case UserAction.DELETE_COMMENT:
+        try {
+          this.#detailsComponent.updateElement({ deleteId: update.id, isBlocked: true });
+          await this.#commentsModel.delete(updateType, update);
+        } catch (err) {
+          this.#detailsComponent.shake(this.#resetDetailsComponent);
+        }
+        break;
+
+      case UserAction.ADD_COMMENT:
+        try {
+          this.#detailsComponent.updateElement({ isBlocked: true });
+          await this.#commentsModel.add(updateType, update);
+          this.#detailsComponent.updateElement({ message: null, emotion: null });
+        } catch (err) {
+          this.#detailsComponent.shake(this.#resetDetailsComponent);
+        }
+        break;
+    }
+
+    this.#uiBlocker.unblock();
   };
 
   /**Обработчик события модели*/
@@ -122,14 +156,13 @@ export default class FilmDetailsPresenter {
 
       case UpdateType.PATCH:
         this.#movie = data;
-        this.#updateDetailsComponent();
+        this.#resetDetailsComponent();
         break;
 
       case UpdateType.MINOR:
         this.#movie = data;
-        this.#updateDetailsComponent();
+        this.#resetDetailsComponent();
         break;
     }
   };
-
 }

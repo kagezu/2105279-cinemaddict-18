@@ -1,5 +1,7 @@
 export const ESCAPE_KEY_NAME = 'Escape';
 
+export const emotions = ['smile', 'sleeping', 'puke', 'angry'];
+
 export const FilterType = {
   ALL: 'all movies',
   WATCHLIST: 'watchlist',
@@ -25,8 +27,8 @@ export const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
-  GLOBAL: 'GLOBAL',
   INIT: 'INIT',
+  MODEL: 'MODEL'
 };
 
 export const Method = {
@@ -36,4 +38,7 @@ export const Method = {
   DELETE: 'DELETE',
 };
 
-export const emotions = ['smile', 'sleeping', 'puke', 'angry'];
+export const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000
+};

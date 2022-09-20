@@ -33,6 +33,22 @@ export default class FilmCardPresenter {
     }
   };
 
+  setSaving = () => {
+    this.#cardComponent.updateElement({
+      isDisabled: true
+    });
+  };
+
+  #resetState = () => {
+    this.#cardComponent.updateElement({
+      isDisabled: false
+    });
+  };
+
+  setAborting = () => {
+    this.#cardComponent.shake(this.#resetState);
+  };
+
   destroy = () => remove(this.#cardComponent);
 
   // Показать попап
@@ -41,29 +57,32 @@ export default class FilmCardPresenter {
   //Изменение и обновление опций
 
   #handleWatchlistClick = () => {
-    this.#movie.userDetails.watchlist = !this.#movie.userDetails.watchlist;
+    const movie = JSON.parse(JSON.stringify(this.#movie));
+    movie.userDetails.watchlist = !movie.userDetails.watchlist;
     this.#changeData(
       UserAction.UPDATE_MOVIE,
       UpdateType.MINOR,
-      this.#movie
+      movie
     );
   };
 
   #handleWatchedClick = () => {
-    this.#movie.userDetails.alreadyWatched = !this.#movie.userDetails.alreadyWatched;
+    const movie = JSON.parse(JSON.stringify(this.#movie));
+    movie.userDetails.alreadyWatched = !movie.userDetails.alreadyWatched;
     this.#changeData(
       UserAction.UPDATE_MOVIE,
       UpdateType.MINOR,
-      this.#movie
+      movie
     );
   };
 
   #handleFavoriteClick = () => {
-    this.#movie.userDetails.favorite = !this.#movie.userDetails.favorite;
+    const movie = JSON.parse(JSON.stringify(this.#movie));
+    movie.userDetails.favorite = !movie.userDetails.favorite;
     this.#changeData(
       UserAction.UPDATE_MOVIE,
       UpdateType.MINOR,
-      this.#movie
+      movie
     );
   };
 
