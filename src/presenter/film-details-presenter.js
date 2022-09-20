@@ -115,6 +115,7 @@ export default class FilmDetailsPresenter {
     switch (actionType) {
       case UserAction.UPDATE_MOVIE:
         try {
+          this.#detailsComponent.updateElement({ isBlocked: true });
           await this.#movieModel.update(updateType, update);
         } catch (err) {
           this.#detailsComponent.shake(this.#resetDetailsComponent);
