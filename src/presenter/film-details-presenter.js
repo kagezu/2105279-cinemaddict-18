@@ -2,7 +2,7 @@ import FilmDetailsView from '../view/film-details-view.js';
 import { render, remove, replace } from '../framework/render.js';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 import { isEscapeKey } from '../utils/common.js';
-import { UpdateType, TimeLimit } from '../const.js';
+import { UpdateType, TimeLimit, UserAction } from '../const.js';
 
 export default class FilmDetailsPresenter {
   #container;
@@ -52,7 +52,6 @@ export default class FilmDetailsPresenter {
       replace(this.#detailsComponent, prevDetailsComponent);
     }
 
-    this.#uiBlocker.block();
     this.#commentsModel.download(UpdateType.PATCH, this.#movie);
   };
 
@@ -71,44 +70,35 @@ export default class FilmDetailsPresenter {
     }
   };
 
-  // Добавление коментария
-  #handleAddComment = async (comment) => {
-    this.#uiBlocker.block();
-    try {
-      await this.#commentsModel.add(UpdateType.MINOR, { comment, id: this.#movie.id });
-    } catch (err) {
-      this.#uiBlocker.unblock();
-      // this.#detailsComponent.shake(() => { });
-    }
+  // Добавление комментария
+  #handleAddComment = (comment) => {
+    this.#viewAction(UserAction.ADD_COMMENT, UpdateType.MINOR, { comment, id: this.#movie.id });
   };
 
-  // удаление коментария
+  // удаление комментария
   #handleDeleteComment = (id) => {
-    this.#uiBlocker.block();
-    this.#commentsModel.delete(UpdateType.MINOR, { id, movie: this.#movie });
+    this.#viewAction(UserAction.DELETE_COMMENT, UpdateType.MINOR, { id, movie: this.#movie });
   };
 
 
-  //Изменение и обновление опций
-
-  #updateMovie = () => {
-    this.#uiBlocker.block();
-    this.#movieModel.update(UpdateType.MINOR, this.#movie);
-  };
+  //Изменение опций
 
   #handleWatchlistClick = () => {
-    this.#movie.userDetails.watchlist = !this.#movie.userDetails.watchlist;
-    this.#updateMovie();
+    const movie = JSON.parse(JSON.stringify(this.#movie));
+    movie.userDetails.watchlist = !movie.userDetails.watchlist;
+    this.#viewAction(UserAction.UPDATE_MOVIE, UpdateType.MINOR, movie);
   };
 
   #handleWatchedClick = () => {
-    this.#movie.userDetails.alreadyWatched = !this.#movie.userDetails.alreadyWatched;
-    this.#updateMovie();
+    const movie = JSON.parse(JSON.stringify(this.#movie));
+    movie.userDetails.alreadyWatched = !movie.userDetails.alreadyWatched;
+    this.#viewAction(UserAction.UPDATE_MOVIE, UpdateType.MINOR, movie);
   };
 
   #handleFavoriteClick = () => {
-    this.#movie.userDetails.favorite = !this.#movie.userDetails.favorite;
-    this.#updateMovie();
+    const movie = JSON.parse(JSON.stringify(this.#movie));
+    movie.userDetails.favorite = !movie.userDetails.favorite;
+    this.#viewAction(UserAction.UPDATE_MOVIE, UpdateType.MINOR, movie);
   };
 
   /** Перерисовка и разблокировка попапа */
@@ -116,8 +106,41 @@ export default class FilmDetailsPresenter {
     {
       movie: this.#movie,
       comments: this.#commentsModel.comments,
-      isBlocked: false
+      isBlocked: false,
+      deleteId: null
     });
+
+  #viewAction = async (actionType, updateType, update) => {
+    this.#uiBlocker.block();
+
+    switch (actionType) {
+      case UserAction.UPDATE_MOVIE:
+        try {
+          await this.#movieModel.update(updateType, update);
+        } catch (err) {
+          this.#detailsComponent.shake(this.#updateDetailsComponent);
+        }
+        break;
+
+      case UserAction.ADD_COMMENT:
+        try {
+          await this.#movieModel.update(updateType, update);
+        } catch (err) {
+          this.#detailsComponent.shake(this.#updateDetailsComponent);
+        }
+        break;
+
+      case UserAction.DELETE_COMMENT:
+        try {
+          await this.#movieModel.update(updateType, update);
+        } catch (err) {
+          this.#detailsComponent.shake(this.#updateDetailsComponent);
+        }
+        break;
+    }
+
+    this.#uiBlocker.unblock();
+  };
 
   /**Обработчик события модели*/
   #handleModelEvent = (updateType, data) => {
@@ -138,7 +161,5 @@ export default class FilmDetailsPresenter {
         this.#updateDetailsComponent();
         break;
     }
-
-    this.#uiBlocker.unblock();
   };
 }

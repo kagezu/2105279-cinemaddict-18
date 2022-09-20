@@ -52,9 +52,10 @@ const createGenres = (genres) => {
   </tr>` : '';
 };
 const createDescription = (description) => description ? `<p class="film-details__film-description">${description}</p>` : '';
-const createButton = (id, text, activated) => {
+const createButton = (id, text, activated, isBlocked) => {
   const style = activated ? ' film-details__control-button--active' : '';
-  return `<button type="button" class="film-details__control-button film-details__control-button--${id}${style}" id="${id}" name="${id}">${text}</button>`;
+  return `<button type="button" class="film-details__control-button film-details__control-button--${id}${style}" id="${id}" name="${id}"
+  ${isBlocked ? ' disabled' : ''}>${text}</button>`;
 };
 const createCountComments = (count) => `<h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${count ? count : 0}</span></h3>`;
 const createSmile = (emotion) => emotion ? `<img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-smile">` : '';
@@ -143,9 +144,9 @@ const createFilmDetailsTemplate = ({ movie, comments: listComments, emotion, mes
       </div>
 
       <section class="film-details__controls">
-      ${createButton('watchlist', 'Add to watchlist', watchlist)}
-      ${createButton('watched', 'Already watched', alreadyWatched)}
-      ${createButton('favorite', 'Add to favorites', favorite)}
+      ${createButton('watchlist', 'Add to watchlist', watchlist, isBlocked)}
+      ${createButton('watched', 'Already watched', alreadyWatched, isBlocked)}
+      ${createButton('favorite', 'Add to favorites', favorite, isBlocked)}
       </section>
     </div>
 

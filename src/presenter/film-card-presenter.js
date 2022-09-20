@@ -39,14 +39,14 @@ export default class FilmCardPresenter {
     });
   };
 
-  #resetFormState = () => {
+  #resetState = () => {
     this.#cardComponent.updateElement({
       isDisabled: false
     });
   };
 
   setAborting = () => {
-    this.#cardComponent.shake(this.#resetFormState);
+    this.#cardComponent.shake(this.#resetState);
   };
 
   destroy = () => remove(this.#cardComponent);
@@ -72,7 +72,7 @@ export default class FilmCardPresenter {
     this.#changeData(
       UserAction.UPDATE_MOVIE,
       UpdateType.MINOR,
-      this.#movie
+      movie
     );
   };
 
