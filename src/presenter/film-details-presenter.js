@@ -80,7 +80,6 @@ export default class FilmDetailsPresenter {
     this.#viewAction(UserAction.DELETE_COMMENT, UpdateType.MINOR, { id, movie: this.#movie });
   };
 
-
   //Изменение опций
 
   #handleWatchlistClick = () => {
@@ -122,15 +121,16 @@ export default class FilmDetailsPresenter {
         }
         break;
 
-      case UserAction.ADD_COMMENT:
+      case UserAction.DELETE_COMMENT:
         try {
-          await this.#movieModel.update(updateType, update);
+          this.#detailsComponent.updateElement({ deleteId: update.id });
+          await this.#commentsModel.delete(updateType, update);
         } catch (err) {
           this.#detailsComponent.shake(this.#updateDetailsComponent);
         }
         break;
 
-      case UserAction.DELETE_COMMENT:
+      case UserAction.ADD_COMMENT:
         try {
           await this.#movieModel.update(updateType, update);
         } catch (err) {

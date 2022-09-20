@@ -42,7 +42,7 @@ export default class CommentsModel extends Observable {
       const index = movie.comments.findIndex((comment) => comment === id);
       movie.comments.splice(index, 1);
     } catch (err) {
-      //
+      throw new Error('CommentsModel.delete()');
     }
 
     this._notify(UpdateType.MODEL, movie);
