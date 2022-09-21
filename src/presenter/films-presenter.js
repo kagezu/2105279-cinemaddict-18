@@ -1,5 +1,6 @@
 import SortView from '../view/sort-view.js';
 import FilmListView from '../view/film-list-view.js';
+import FilmListExtraView from '../view/film-list-extra-view.js';
 import FilmsView from '../view/films-view.js';
 import FilmListContainerView from '../view/film-list-container.js';
 import ShowMoreButtonView from '../view/show-more-button.js';
@@ -84,6 +85,14 @@ export default class FilmsPresenter {
     this.#renderFilmContainer();
     this.#renderMoreButton();
     this.#handleLoadMoreCardClick();
+  };
+
+  /** Отрисовка карточек с высоким рейтингом*/
+  #renderTopRated = () => {
+  };
+
+  /** Отрисовка карточек с большим количеством комментариев*/
+  #renderMostCommented = () => {
   };
 
   /**Отрисовка контейнера для карточек*/
