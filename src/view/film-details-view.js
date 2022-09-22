@@ -1,5 +1,5 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
-import { formatStringToDate, formatStringToDateWithTime, formatMinutesToTime, formatStringToHumanization } from '../utils/date.js';
+import { formatStringToDate, formatMinutesToTime, formatStringToHumanization } from '../utils/date.js';
 import { deepCopy } from '../utils/common.js';
 import { emotions } from '../const.js';
 import he from 'he';
