@@ -9,7 +9,7 @@ import { render, remove } from '../framework/render.js';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 import FilmCardPresenter from './film-card-presenter.js';
 import FilmDetailsPresenter from './film-details-presenter.js';
-import { sortDate, sortRating } from '../utils/common.js';
+import { sortDate, sortRating, sortComment } from '../utils/common.js';
 import { SortType, UserAction, UpdateType, TimeLimit } from '../const.js';
 import { filter } from '../utils/filter.js';
 
@@ -24,6 +24,8 @@ export default class FilmsPresenter {
   #filmListContainer;
   #showMoreButton = null;
   #sortComponent = null;
+  #topRatedContainer;
+  #mostCommentedContainer;
   #filmList;
   #filmDetailsPresenter;
   #commentsModel;
@@ -31,6 +33,8 @@ export default class FilmsPresenter {
   #filterModel;
 
   #cardPresenter = new Map();
+  #cardPresenterTopRated = new Map();
+  #cardPresenterMostCommented = new Map();
   #currentSortType = SortType.DEFAULT;
   #renderedCardCount;
   #isLoading = true;
@@ -85,14 +89,49 @@ export default class FilmsPresenter {
     this.#renderFilmContainer();
     this.#renderMoreButton();
     this.#handleLoadMoreCardClick();
+    this.#renderTopRated();
+    this.#renderMostCommented();
+  };
+
+  /**Очистка всех шаблонов*/
+  #clearViews = (sortType = null) => {
+    this.#cardPresenterTopRated.forEach((presenter) => presenter.destroy());
+    this.#cardPresenterTopRated.clear();
+    this.#cardPresenterMostCommented.forEach((presenter) => presenter.destroy());
+    this.#cardPresenterMostCommented.clear();
+    this.#cardPresenter.forEach((presenter) => presenter.destroy());
+    this.#cardPresenter.clear();
+    this.#renderedCardCount = 0;
+    remove(this.#showMoreButton);
+    remove(this.#filmListContainer);
+    remove(this.#filmList);
+    remove(this.#filmsContainer);
+    remove(this.#sortComponent);
+    this.#currentSortType = sortType ? sortType : this.#currentSortType;
   };
 
   /** Отрисовка карточек с высоким рейтингом*/
   #renderTopRated = () => {
+    const movies = [...this.#movieModel.movies].sort(sortRating);
+    if (movies[0]?.filmInfo.totalRating) {
+      this.#topRatedContainer = new FilmListExtraView('Top rated');
+      const container = new FilmListContainerView();
+      render(this.#topRatedContainer, this.#filmsContainer.element);
+      render(container, this.#topRatedContainer.element);
+      this.#renderCardList(0, 2, movies, this.#cardPresenterTopRated, container.element);
+    }
   };
 
   /** Отрисовка карточек с большим количеством комментариев*/
   #renderMostCommented = () => {
+    const movies = [...this.#movieModel.movies].sort(sortComment);
+    if (movies[0]?.comments?.length) {
+      this.#mostCommentedContainer = new FilmListExtraView('Most commented');
+      const container = new FilmListContainerView();
+      render(this.#mostCommentedContainer, this.#filmsContainer.element);
+      render(container, this.#mostCommentedContainer.element);
+      this.#renderCardList(0, 2, movies, this.#cardPresenterMostCommented, container.element);
+    }
   };
 
   /**Отрисовка контейнера для карточек*/
@@ -125,7 +164,7 @@ export default class FilmsPresenter {
   #handleLoadMoreCardClick = () => {
     const moviesLength = this.movies.length;
     const lastComponent = Math.min(this.#renderedCardCount + CARD_COUNT_PER_STEP, moviesLength);
-    this.#renderCardList(this.#renderedCardCount, lastComponent);
+    this.#renderCardList(this.#renderedCardCount, lastComponent, this.movies, this.#cardPresenter, this.#filmListContainer.element);
     this.#renderedCardCount = lastComponent;
     if (this.#renderedCardCount === moviesLength) {
       remove(this.#showMoreButton);
@@ -133,34 +172,26 @@ export default class FilmsPresenter {
   };
 
   /**Отрисовка части карточек*/
-  #renderCardList = (from, to) => {
-    this.movies
+  #renderCardList = (from, to, movies, presenter, container) => {
+    movies
       .slice(from, to)
-      .forEach((movie) => this.#renderCard(movie));
-  };
-
-  /**Очистка всех шаблонов*/
-  #clearViews = (sortType = null) => {
-    this.#cardPresenter.forEach((presenter) => presenter.destroy());
-    this.#cardPresenter.clear();
-    this.#renderedCardCount = 0;
-    remove(this.#showMoreButton);
-    remove(this.#filmListContainer);
-    remove(this.#filmList);
-    remove(this.#filmsContainer);
-    remove(this.#sortComponent);
-    this.#currentSortType = sortType ? sortType : this.#currentSortType;
+      .forEach((movie) => presenter
+        .set(
+          movie.id,
+          this.#renderCard(movie, container)
+        )
+      );
   };
 
   /**Отрисовка карточки фильма*/
-  #renderCard = (movie) => {
+  #renderCard = (movie, container) => {
     const cardComponent = new FilmCardPresenter(
-      this.#filmListContainer.element,
+      container,
       this.#handleViewAction,
       this.#filmDetailsPresenter.init
     );
     cardComponent.init(movie);
-    this.#cardPresenter.set(movie.id, cardComponent);
+    return cardComponent;
   };
 
   /** Обработчик сортировки карточек фильмов
@@ -182,9 +213,13 @@ export default class FilmsPresenter {
       case UserAction.UPDATE_MOVIE:
         try {
           this.#cardPresenter.get(update.id)?.setSaving();
+          this.#cardPresenterTopRated.get(update.id)?.setSaving();
+          this.#cardPresenterMostCommented.get(update.id)?.setSaving();
           await this.#movieModel.update(updateType, update);
         } catch (err) {
           this.#cardPresenter.get(update.id)?.setAborting();
+          this.#cardPresenterTopRated.get(update.id)?.setAborting();
+          this.#cardPresenterMostCommented.get(update.id)?.setAborting();
         }
         break;
     }
@@ -196,6 +231,8 @@ export default class FilmsPresenter {
     switch (updateType) {
       case UpdateType.PATCH: {
         this.#cardPresenter.get(data.id)?.init(data);
+        this.#cardPresenterTopRated.get(data.id)?.init(data);
+        this.#cardPresenterMostCommented.get(data.id)?.init(data);
       }
         break;
       case UpdateType.MINOR:

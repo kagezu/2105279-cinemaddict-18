@@ -26,8 +26,8 @@ export default class FilmDetailsPresenter {
     }
 
     this.#movie = movie;
-    this.#movieModel.addObserver(this.#handleModelEvent);
     this.#commentsModel.addObserver(this.#handleModelEvent);
+    this.#movieModel.addObserver(this.#handleModelEvent);
 
     const prevDetailsComponent = this.#detailsComponent;
     this.#detailsComponent = new FilmDetailsView(this.#movie);
