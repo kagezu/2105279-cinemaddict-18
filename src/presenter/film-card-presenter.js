@@ -1,6 +1,7 @@
 import FilmCardView from '../view/film-card-view.js';
 import { render, remove, replace } from '../framework/render.js';
 import { UserAction, UpdateType } from '../const.js';
+import { deepCopy } from '../utils/common.js';
 
 export default class FilmCardPresenter {
   #container;
@@ -57,7 +58,7 @@ export default class FilmCardPresenter {
   //Изменение и обновление опций
 
   #handleWatchlistClick = () => {
-    const movie = JSON.parse(JSON.stringify(this.#movie));
+    const movie = deepCopy(this.#movie);
     movie.userDetails.watchlist = !movie.userDetails.watchlist;
     this.#changeData(
       UserAction.UPDATE_MOVIE,
@@ -67,7 +68,7 @@ export default class FilmCardPresenter {
   };
 
   #handleWatchedClick = () => {
-    const movie = JSON.parse(JSON.stringify(this.#movie));
+    const movie = deepCopy(this.#movie);
     movie.userDetails.alreadyWatched = !movie.userDetails.alreadyWatched;
     this.#changeData(
       UserAction.UPDATE_MOVIE,
@@ -77,7 +78,7 @@ export default class FilmCardPresenter {
   };
 
   #handleFavoriteClick = () => {
-    const movie = JSON.parse(JSON.stringify(this.#movie));
+    const movie = deepCopy(this.#movie);
     movie.userDetails.favorite = !movie.userDetails.favorite;
     this.#changeData(
       UserAction.UPDATE_MOVIE,

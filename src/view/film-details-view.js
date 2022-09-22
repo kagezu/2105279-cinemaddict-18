@@ -1,5 +1,6 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { formatStringToDate, formatStringToDateWithTime, formatMinutesToTime } from '../utils/date.js';
+import { deepCopy } from '../utils/common.js';
 import { emotions } from '../const.js';
 import he from 'he';
 
@@ -180,7 +181,7 @@ export default class FilmDetailsView extends AbstractStatefulView {
   }
 
   static parseMovieToState = (movie) => ({
-    movie,
+    movie: deepCopy(movie),
     comments: [],
     emotion: null,
     scroll: null,
