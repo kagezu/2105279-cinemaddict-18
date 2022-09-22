@@ -1,10 +1,9 @@
 import FilmsPresenter from './presenter/films-presenter.js';
 import NavigationPresenter from './presenter/navigation-presenter.js';
-import { render } from './framework/render.js';
+import ProfilePresenter from './presenter/profile-presenter.js';
 import MovieModel from './model/movie-model.js';
 import CommentsModel from './model/comments-model.js';
 import FilterModel from './model/filter-model.js';
-import ProfileView from './view/profile-view.js';
 import FilmApi from './api/film-api.js';
 import CommentApi from './api/comment-api.js';
 
@@ -22,10 +21,11 @@ const filterModel = new FilterModel();
 
 commentsModel.addObserver(movieModel.updateModel);
 
+const profilePresenter = new ProfilePresenter(siteHeaderElement, movieModel);
 const navigationPresenter = new NavigationPresenter(siteMainElement, filterModel, movieModel);
 const filmsPresenter = new FilmsPresenter(siteMainElement, movieModel, commentsModel, filterModel);
 
-render(new ProfileView(), siteHeaderElement);
+profilePresenter.init();
 navigationPresenter.init();
 filmsPresenter.init();
 movieModel.init();
