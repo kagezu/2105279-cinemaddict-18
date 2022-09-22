@@ -41,3 +41,12 @@ export const TimeLimit = {
   LOWER_LIMIT: 350,
   UPPER_LIMIT: 1000
 };
+
+export const DurationType = {
+  NOW: 2,
+  FEW: 10,
+  MINUTES: 120,
+  HOURS: 2880,
+  DAYS: 86400,
+  MOUNTS: 525600
+};

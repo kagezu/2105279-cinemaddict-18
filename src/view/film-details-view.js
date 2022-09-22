@@ -1,5 +1,5 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
-import { formatStringToDate, formatStringToDateWithTime, formatMinutesToTime } from '../utils/date.js';
+import { formatStringToDate, formatStringToDateWithTime, formatMinutesToTime, formatStringToHumanization } from '../utils/date.js';
 import { deepCopy } from '../utils/common.js';
 import { emotions } from '../const.js';
 import he from 'he';
@@ -69,7 +69,7 @@ const createComment = (message, deleteId) => message ?
       <p class="film-details__comment-text">${message.comment ? he.encode(message.comment) : ''}</p>
       <p class="film-details__comment-info">
         <span class="film-details__comment-author">${message.author}</span>
-        <span class="film-details__comment-day">${formatStringToDateWithTime(message.date)}</span>
+        <span class="film-details__comment-day">${formatStringToHumanization(message.date)}</span>
         <button class="film-details__comment-delete"
         data-id ="${message.id}"
         ${deleteId ? ' disabled' : ''}>
