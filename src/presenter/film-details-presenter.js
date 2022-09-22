@@ -1,7 +1,7 @@
 import FilmDetailsView from '../view/film-details-view.js';
 import { render, remove, replace } from '../framework/render.js';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
-import { isEscapeKey } from '../utils/common.js';
+import { isEscapeKey, deepCopy } from '../utils/common.js';
 import { UpdateType, TimeLimit, UserAction } from '../const.js';
 
 export default class FilmDetailsPresenter {
@@ -26,8 +26,8 @@ export default class FilmDetailsPresenter {
     }
 
     this.#movie = movie;
-    this.#movieModel.addObserver(this.#handleModelEvent);
     this.#commentsModel.addObserver(this.#handleModelEvent);
+    this.#movieModel.addObserver(this.#handleModelEvent);
 
     const prevDetailsComponent = this.#detailsComponent;
     this.#detailsComponent = new FilmDetailsView(this.#movie);
@@ -83,19 +83,19 @@ export default class FilmDetailsPresenter {
   //Изменение опций
 
   #handleWatchlistClick = () => {
-    const movie = JSON.parse(JSON.stringify(this.#movie));
+    const movie = deepCopy(this.#movie);
     movie.userDetails.watchlist = !movie.userDetails.watchlist;
     this.#viewAction(UserAction.UPDATE_MOVIE, UpdateType.MINOR, movie);
   };
 
   #handleWatchedClick = () => {
-    const movie = JSON.parse(JSON.stringify(this.#movie));
+    const movie = deepCopy(this.#movie);
     movie.userDetails.alreadyWatched = !movie.userDetails.alreadyWatched;
     this.#viewAction(UserAction.UPDATE_MOVIE, UpdateType.MINOR, movie);
   };
 
   #handleFavoriteClick = () => {
-    const movie = JSON.parse(JSON.stringify(this.#movie));
+    const movie = deepCopy(this.#movie);
     movie.userDetails.favorite = !movie.userDetails.favorite;
     this.#viewAction(UserAction.UPDATE_MOVIE, UpdateType.MINOR, movie);
   };
