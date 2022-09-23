@@ -1,6 +1,8 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { FilterType } from '../const.js';
-const createCount = (name, count) => name === FilterType.ALL ? '' : `<span class="main-navigation__item-count">${count}</span>`;
+
+const createCount = (name, count) => name === FilterType.ALL ? '' :
+  `<span class="main-navigation__item-count" data-filter-type="${name}">${count}</span>`;
 const createFilterItemTemplate = ({ name, text, count }, isActive) => `
 <a href="#${name}" class="main-navigation__item 
 ${isActive ? ' main-navigation__item--active' : ''}"
@@ -40,7 +42,7 @@ export default class NavigationView extends AbstractView {
 
   /**Обработчик выбора фильтра*/
   #filterTypeChangeHandler = (evt) => {
-    if (evt.target.tagName !== 'A') {
+    if (evt.target.tagName !== 'A' && evt.target.tagName !== 'SPAN') {
       return;
     }
     evt.preventDefault();
