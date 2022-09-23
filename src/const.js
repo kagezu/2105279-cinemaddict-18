@@ -38,7 +38,7 @@ export const Method = {
 };
 
 export const TimeLimit = {
-  LOWER_LIMIT: 350,
+  LOWER_LIMIT: 500,
   UPPER_LIMIT: 1000
 };
 
@@ -57,3 +57,22 @@ export const DurationType = {
   // Менее года в месяцах
   MOUNTS: 365 * 24 * 60
 };
+
+export const ranks = [
+  {
+    name: '',
+    count: 1
+  },
+  {
+    name: 'Novice',
+    count: 11
+  },
+  {
+    name: 'Fan',
+    count: 21
+  },
+  {
+    name: 'Movie Buff',
+    count: Infinity
+  },
+];

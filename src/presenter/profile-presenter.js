@@ -1,6 +1,7 @@
 import { render, replace, remove } from '../framework/render.js';
 import ProfileView from '../view/profile-view.js';
-import { UpdateType } from '../const.js';
+import { filter } from '../utils/filter.js';
+import { UpdateType, FilterType, ranks } from '../const.js';
 
 export default class NavigationPresenter {
   #movieModel = null;
@@ -15,9 +16,12 @@ export default class NavigationPresenter {
   }
 
   init = () => {
+
     const prevProfileComponent = this.#profileComponent;
 
-    this.#profileComponent = new ProfileView('movie buff');
+    const countWatched = filter[FilterType.HISTORY](this.#movieModel.movies).length;
+    const rankName = ranks.find(({ count }) => count > countWatched).name;
+    this.#profileComponent = new ProfileView(rankName);
 
     if (prevProfileComponent === null) {
       render(this.#profileComponent, this.#profileContainer);
