@@ -1,11 +1,13 @@
 import AbstractView from '../framework/view/abstract-view.js';
-
+import { FilterType } from '../const.js';
+const createCount = (name, count) => name === FilterType.ALL ? '' : `<span class="main-navigation__item-count">${count}</span>`;
 const createFilterItemTemplate = ({ name, text, count }, isActive) => `
 <a href="#${name}" class="main-navigation__item 
 ${isActive ? ' main-navigation__item--active' : ''}"
 data-filter-type="${name}">
 ${text}
- <span class="main-navigation__item-count">${count}</span></a>`;
+${createCount(name, count)}
+ </a>`;
 
 const createNavigationTemplate = (filters, currentFilterType) => {
   const filterItemsTemplate = filters
