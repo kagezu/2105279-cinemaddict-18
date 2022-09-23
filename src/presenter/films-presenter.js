@@ -75,10 +75,6 @@ export default class FilmsPresenter {
     return filteredMovies;
   }
 
-  get comments() {
-    return this.#commentsModel;
-  }
-
   #renderLoading = () => {
     render(this.#loadingComponent, this.#container);
   };

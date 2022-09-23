@@ -1,6 +1,5 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { formatStringToDate, formatMinutesToTime, formatStringToHumanization } from '../utils/date.js';
-import { deepCopy } from '../utils/common.js';
 import { emotions } from '../const.js';
 import he from 'he';
 
@@ -181,7 +180,7 @@ export default class FilmDetailsView extends AbstractStatefulView {
   }
 
   static parseMovieToState = (movie) => ({
-    movie: deepCopy(movie),
+    movie,
     comments: [],
     emotion: null,
     scroll: null,
@@ -203,11 +202,16 @@ export default class FilmDetailsView extends AbstractStatefulView {
     this.element.querySelector('.film-details__emoji-list').addEventListener('click', this.#emotionClickHandler);
     this.element.querySelector('.film-details__comment-input').addEventListener('input', this.#messageInputHandler);
     this.element.querySelector('.film-details__comments-list').addEventListener('click', this.#deleteCommentHandler);
-    this.element.addEventListener('keydown', this.#addCommentHandler);
+    document.addEventListener('keydown', this.#addCommentHandler);
 
     this.element.scrollTop = this._state.scroll;
     this.element.addEventListener('scroll', this.#positionScrollHandler);
   };
+
+  removeElement() {
+    super.removeElement();
+    document.removeEventListener('keydown', this.#addCommentHandler);
+  }
 
   // Добавление комментария
   setAddCommentHandler = (callback) => {
