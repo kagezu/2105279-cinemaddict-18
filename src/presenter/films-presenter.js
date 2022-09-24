@@ -81,7 +81,6 @@ export default class FilmsPresenter {
 
   /**Отрисовка всех шаблонов*/
   #renderViews = () => {
-    this.#renderSort();
     this.#renderFilmContainer();
     this.#renderMoreButton();
     this.#handleLoadMoreCardClick();
@@ -132,8 +131,13 @@ export default class FilmsPresenter {
 
   /**Отрисовка контейнера для карточек*/
   #renderFilmContainer = () => {
+    const isMovies = !!this.movies.length;
+    if (isMovies) {
+      this.#renderSort();
+    }
+
     this.#filmsContainer = new FilmsView();
-    this.#filmList = new FilmListView(this.#filterModel.filter, !this.movies.length);
+    this.#filmList = new FilmListView(this.#filterModel.filter, !isMovies);
     this.#filmListContainer = new FilmListContainerView();
 
     render(this.#filmsContainer, this.#container);
