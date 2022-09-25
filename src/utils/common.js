@@ -1,10 +1,6 @@
 import { ESCAPE_KEY_NAME } from '../const.js';
 import dayjs from 'dayjs';
 
-// Взято с https://www.digitalocean.com/community/tutorials/copying-objects-in-javascript
-/**Глубокое копирование объекта*/
-export const getDeepCopy = (object) => JSON.parse(JSON.stringify(object));
-
 /**Преобразование первый символ в заглавный*/
 export const transformFirstCharToUpperCase = (str) => `${str[0].toUpperCase()}${str.slice(1)}`;
 

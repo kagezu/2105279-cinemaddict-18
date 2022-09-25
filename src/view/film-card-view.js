@@ -1,5 +1,6 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { formatStringToYear, formatMinutesToTime } from '../utils/date.js';
+import { MAX_LENGTH_DESCRIPTION } from '../const.js';
 
 const createTitle = (title) => title ? `<h3 class="film-card__title">${title}</h3>` : '';
 const createRating = (rating) => rating ? `<p class="film-card__rating">${rating}</p>` : '';
@@ -10,7 +11,7 @@ const createPoster = (poster) => poster ? `<img src="${poster}" alt="" class="fi
 const createDescription = (description) => {
   let result = '';
   if (description) {
-    const text = description.length > 140 ? `${description.slice(0, 139)}...` : description;
+    const text = description.length > MAX_LENGTH_DESCRIPTION ? `${description.slice(0, MAX_LENGTH_DESCRIPTION - 1)}...` : description;
     result = `<p class="film-card__description">${text}</p>`;
   }
   return result;

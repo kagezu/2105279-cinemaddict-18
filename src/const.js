@@ -2,6 +2,8 @@ export const ESCAPE_KEY_NAME = 'Escape';
 
 export const emotions = ['smile', 'sleeping', 'puke', 'angry'];
 
+export const MAX_LENGTH_DESCRIPTION = 140;
+
 export const FilterType = {
   ALL: 'all movies',
   WATCHLIST: 'watchlist',

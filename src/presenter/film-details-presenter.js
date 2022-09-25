@@ -1,7 +1,7 @@
 import FilmDetailsView from '../view/film-details-view.js';
 import { render, remove, replace } from '../framework/render.js';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
-import { isEscapeKey, getDeepCopy } from '../utils/common.js';
+import { isEscapeKey } from '../utils/common.js';
 import { UpdateType, TimeLimit, UserAction } from '../const.js';
 
 export default class FilmDetailsPresenter {
@@ -13,11 +13,15 @@ export default class FilmDetailsPresenter {
   #isOpenDetails = false;
   #uiBlocker = new UiBlocker(TimeLimit.LOWER_LIMIT, TimeLimit.UPPER_LIMIT);
 
+  // Конструктор
+
   constructor(container, movieModel, commentsModel) {
     this.#container = container;
     this.#commentsModel = commentsModel;
     this.#movieModel = movieModel;
   }
+
+  // публичные методы
 
   init = (movie) => {
 
@@ -41,63 +45,28 @@ export default class FilmDetailsPresenter {
       window.removeEventListener('keydown', this.#handleWindowKeydown);
     });
     this.#container.classList.add('hide-overflow');
-    window.addEventListener('keydown', this.#handleWindowKeydown);
 
     if (!prevDetailsComponent) {
+      window.addEventListener('keydown', this.#handleWindowKeydown);
       render(this.#detailsComponent, this.#container);
       this.#isOpenDetails = true;
     }
 
     if (this.#container.contains(prevDetailsComponent?.element)) {
       replace(this.#detailsComponent, prevDetailsComponent);
+      remove(prevDetailsComponent);
     }
 
     this.#commentsModel.download(UpdateType.PATCH, this.#movie);
   };
+
+  // Приватные методы
 
   #closeDetailsView = () => {
     remove(this.#detailsComponent);
     this.#container.classList.remove('hide-overflow');
     this.#detailsComponent = null;
     this.#isOpenDetails = false;
-  };
-
-  #handleWindowKeydown = (evt) => {
-    if (isEscapeKey(evt)) {
-      evt.preventDefault();
-      this.#closeDetailsView();
-      window.removeEventListener('keydown', this.#handleWindowKeydown);
-    }
-  };
-
-  // Добавление комментария
-  #handleAddComment = (comment) => {
-    this.#viewAction(UserAction.ADD_COMMENT, UpdateType.MINOR, { comment, id: this.#movie.id });
-  };
-
-  // удаление комментария
-  #handleDeleteComment = (id) => {
-    this.#viewAction(UserAction.DELETE_COMMENT, UpdateType.MINOR, { id, movie: this.#movie });
-  };
-
-  //Изменение опций
-
-  #handleWatchlistClick = () => {
-    const movie = getDeepCopy(this.#movie);
-    movie.userDetails.watchlist = !movie.userDetails.watchlist;
-    this.#viewAction(UserAction.UPDATE_MOVIE, UpdateType.MINOR, movie);
-  };
-
-  #handleWatchedClick = () => {
-    const movie = getDeepCopy(this.#movie);
-    movie.userDetails.alreadyWatched = !movie.userDetails.alreadyWatched;
-    this.#viewAction(UserAction.UPDATE_MOVIE, UpdateType.MINOR, movie);
-  };
-
-  #handleFavoriteClick = () => {
-    const movie = getDeepCopy(this.#movie);
-    movie.userDetails.favorite = !movie.userDetails.favorite;
-    this.#viewAction(UserAction.UPDATE_MOVIE, UpdateType.MINOR, movie);
   };
 
   /** Перерисовка и разблокировка попапа */
@@ -143,6 +112,46 @@ export default class FilmDetailsPresenter {
     }
 
     this.#uiBlocker.unblock();
+  };
+
+  // Обработчики событий
+
+  #handleWindowKeydown = (evt) => {
+    if (isEscapeKey(evt)) {
+      evt.preventDefault();
+      this.#closeDetailsView();
+      window.removeEventListener('keydown', this.#handleWindowKeydown);
+    }
+  };
+
+  // Добавление комментария
+  #handleAddComment = (comment) => {
+    this.#viewAction(UserAction.ADD_COMMENT, UpdateType.MINOR, { comment, id: this.#movie.id });
+  };
+
+  // удаление комментария
+  #handleDeleteComment = (id) => {
+    this.#viewAction(UserAction.DELETE_COMMENT, UpdateType.MINOR, { id, movie: this.#movie });
+  };
+
+  //Изменение опций
+
+  #handleWatchlistClick = () => {
+    const movie = structuredClone(this.#movie);
+    movie.userDetails.watchlist = !movie.userDetails.watchlist;
+    this.#viewAction(UserAction.UPDATE_MOVIE, UpdateType.MINOR, movie);
+  };
+
+  #handleWatchedClick = () => {
+    const movie = structuredClone(this.#movie);
+    movie.userDetails.alreadyWatched = !movie.userDetails.alreadyWatched;
+    this.#viewAction(UserAction.UPDATE_MOVIE, UpdateType.MINOR, movie);
+  };
+
+  #handleFavoriteClick = () => {
+    const movie = structuredClone(this.#movie);
+    movie.userDetails.favorite = !movie.userDetails.favorite;
+    this.#viewAction(UserAction.UPDATE_MOVIE, UpdateType.MINOR, movie);
   };
 
   /**Обработчик события модели*/

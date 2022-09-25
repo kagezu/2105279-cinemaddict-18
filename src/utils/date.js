@@ -15,11 +15,6 @@ const formatStringToYear = (date) => dayjs(date).format('YYYY');
 const formatStringToDate = (date) => dayjs(date).format('DD MMMM YYYY');
 
 /**
- *Преобразует в формат YYYY/MM/DD hh:mm
- */
-const formatStringToDateWithTime = (date) => dayjs(date).format('YYYY/MM/DD hh:mm');
-
-/**
  *Преобразует  длительность в минутах, в часы и минуты
  */
 const formatMinutesToTime = (minutes) => dayjs.duration(minutes, 'minutes').format('H[h] mm[m]');
@@ -52,7 +47,6 @@ const formatStringToHumanization = (date) => {
 export {
   formatStringToYear,
   formatStringToDate,
-  formatStringToDateWithTime,
   formatMinutesToTime,
   formatStringToHumanization
 };
