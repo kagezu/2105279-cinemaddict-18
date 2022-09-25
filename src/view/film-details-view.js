@@ -175,24 +175,18 @@ export default class FilmDetailsView extends AbstractStatefulView {
     this._restoreHandlers();
   }
 
+  // Геттеры
+
   get template() {
     return createFilmDetailsTemplate(this._state);
   }
 
-  static parseMovieToState = (movie) => ({
-    movie,
-    comments: [],
-    emotion: null,
-    scroll: null,
-    message: null,
-    isBlocked: false,
-    deleteId: null
-  });
+  // Перегружаемые методы
 
-  static parseStateToMove = (state) => ({
-    'movie': state.movie,
-    'comments': state.comments
-  });
+  removeElement() {
+    document.removeEventListener('keydown', this.#addCommentHandler);
+    super.removeElement();
+  }
 
   _restoreHandlers = () => {
     this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#closeButtonClickHandler);
@@ -208,15 +202,39 @@ export default class FilmDetailsView extends AbstractStatefulView {
     this.element.addEventListener('scroll', this.#positionScrollHandler);
   };
 
-  removeElement() {
-    document.removeEventListener('keydown', this.#addCommentHandler);
-    super.removeElement();
-  }
+  // Публичные методы
 
-  // Добавление комментария
+  /** Добавление комментария*/
   setAddCommentHandler = (callback) => {
     this._callback.addComment = callback;
   };
+
+  /** Удаление комментария*/
+  setDeleteCommentHandler = (callback) => {
+    this._callback.deleteComment = callback;
+  };
+
+  /** Закрытие попапа*/
+  setCloseButtonClickHandler = (callback) => {
+    this._callback.click = callback;
+  };
+
+  /** Переключить watchlist*/
+  setWatchlistClickHandler = (callback) => {
+    this._callback.watchlistClick = callback;
+  };
+
+  /** Переключить watched*/
+  setWatchedClickHandler = (callback) => {
+    this._callback.watchedClick = callback;
+  };
+
+  /** Переключить favorite*/
+  setFavoriteClickHandler = (callback) => {
+    this._callback.favoriteClick = callback;
+  };
+
+  // Обработчики событий
 
   #addCommentHandler = (evt) => {
     // Сочетание клавиш Ctrl/Command + Enter
@@ -238,12 +256,6 @@ export default class FilmDetailsView extends AbstractStatefulView {
     this._setState({ isBlocked: false });
   };
 
-
-  // Удаление комментария
-  setDeleteCommentHandler = (callback) => {
-    this._callback.deleteComment = callback;
-  };
-
   #deleteCommentHandler = (evt) => {
     if (evt.target.tagName !== 'BUTTON') {
       return;
@@ -254,21 +266,9 @@ export default class FilmDetailsView extends AbstractStatefulView {
     this._setState({ deleteId: null });
   };
 
-  // Закрытие попапа
-
-  setCloseButtonClickHandler = (callback) => {
-    this._callback.click = callback;
-  };
-
   #closeButtonClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.click();
-  };
-
-  // Переключить watchlist
-
-  setWatchlistClickHandler = (callback) => {
-    this._callback.watchlistClick = callback;
   };
 
   #watchlistClickHandler = (evt) => {
@@ -276,21 +276,9 @@ export default class FilmDetailsView extends AbstractStatefulView {
     this._callback.watchlistClick();
   };
 
-  // Переключить watched
-
-  setWatchedClickHandler = (callback) => {
-    this._callback.watchedClick = callback;
-  };
-
   #watchedClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.watchedClick();
-  };
-
-  // Переключить favorite
-
-  setFavoriteClickHandler = (callback) => {
-    this._callback.favoriteClick = callback;
   };
 
   #favoriteClickHandler = (evt) => {
@@ -313,7 +301,6 @@ export default class FilmDetailsView extends AbstractStatefulView {
   };
 
   // Сохранение позиции скроллинга в состояние
-
   #positionScrollHandler = () => {
     this._setState({
       scroll: this.element.scrollTop
@@ -321,11 +308,28 @@ export default class FilmDetailsView extends AbstractStatefulView {
   };
 
   // Сохранение нового комментария в состояние
-
   #messageInputHandler = (evt) => {
     evt.preventDefault();
     this._setState({
       message: evt.target.value
     });
   };
+
+  // Статические методы
+
+  static parseMovieToState = (movie) => ({
+    movie,
+    comments: [],
+    emotion: null,
+    scroll: null,
+    message: null,
+    isBlocked: false,
+    deleteId: null
+  });
+
+  static parseStateToMove = (state) => ({
+    'movie': state.movie,
+    'comments': state.comments
+  });
+
 }
