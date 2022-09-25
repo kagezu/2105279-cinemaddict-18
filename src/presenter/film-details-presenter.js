@@ -41,15 +41,16 @@ export default class FilmDetailsPresenter {
       window.removeEventListener('keydown', this.#handleWindowKeydown);
     });
     this.#container.classList.add('hide-overflow');
-    window.addEventListener('keydown', this.#handleWindowKeydown);
 
     if (!prevDetailsComponent) {
+      window.addEventListener('keydown', this.#handleWindowKeydown);
       render(this.#detailsComponent, this.#container);
       this.#isOpenDetails = true;
     }
 
     if (this.#container.contains(prevDetailsComponent?.element)) {
       replace(this.#detailsComponent, prevDetailsComponent);
+      remove(prevDetailsComponent);
     }
 
     this.#commentsModel.download(UpdateType.PATCH, this.#movie);

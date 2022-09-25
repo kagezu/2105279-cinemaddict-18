@@ -209,8 +209,8 @@ export default class FilmDetailsView extends AbstractStatefulView {
   };
 
   removeElement() {
-    super.removeElement();
     document.removeEventListener('keydown', this.#addCommentHandler);
+    super.removeElement();
   }
 
   // Добавление комментария
