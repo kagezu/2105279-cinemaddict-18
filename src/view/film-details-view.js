@@ -219,7 +219,8 @@ export default class FilmDetailsView extends AbstractStatefulView {
   };
 
   #addCommentHandler = (evt) => {
-    if (!evt.ctrlKey || evt.key !== 'Enter') {
+    // Сочетание клавиш Ctrl/Command + Enter
+    if (!(evt.ctrlKey || evt.metaKey) || evt.key !== 'Enter') {
       return;
     }
 
